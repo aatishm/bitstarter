@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- FORMATTING IS ALL MESSED UP. TODO: FIX IT!-->
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -14,6 +15,26 @@
 
         <script src="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fjquery.js"></script>
         <script src="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fbootstrap.js"></script>
+
+        <!-- Linkedin Sign up -->                                                                                                   
+        <script type="text/javascript" src="http://platform.linkedin.com/in.js">
+            api_key: v8yfm0j3yo65                                                                                                                   
+            onLoad: onLinkedInLoad                                                                                                                              
+            <!--authorize: true-->
+        </script>
+
+        <script type="text/javascript">
+            // 2. Runs when the JavaScript framework is loaded                                                                                                                                                      
+        function onLinkedInLoad() {
+            IN.Event.on(IN, "auth", onLinkedInAuth);                                                                                                                                                                       }
+
+        function onLinkedInAuth() {
+            IN.API.Profile("me").result(displayProfiles);                                                                                                                                                                      // remove the linkedin button element
+            $('.IN-widget').remove();                                                                                                                                                                                      }                                            
+        // 2. Runs when the Profile() API call returns successfully  
+        function displayProfiles(profiles) {                                                                                                                                                                                   member = profiles.values[0];                                              
+            document.getElementById("profiles").innerHTML =                                                                                                                                                                        "<p id=\"" + member.id + "\">Hello " +  member.firstName + " " + member.lastName + "</p>";
+        }                                                                                                                                                                                                                  </script>   
 
         <style type="text/css">
 
@@ -63,6 +84,7 @@
             }
             .order {
                 padding: 2% 0%;
+                color: white;
             }
             .actions {
                 background-color: #343434;
@@ -166,6 +188,10 @@
                                         <a class="coinbase-button" data-code="95ffa3e6808f3875b981f00dd973a967" data-button-style="custom_large" href="https://coinbase.com/checkouts/95ffa3e6808f3875b981f00dd973a967">Pay With Bitcoin</a>
                                         <script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
                                     </div>
+                                    <div class="span6 offset2 order">
+                                        <script type="IN/Login"></script>
+                                        <div id="profiles"></div>
+                                    </div>
                                     <div class="span8 offset2 social">
                                         <!-- AddThis Button BEGIN -->
                                         <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
@@ -239,13 +265,13 @@
                         _gaq.push(['_trackPageview']);
 
                         (function() {
-                         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                         })();
+                            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                        })();
 
-</script>
+                    </script>
 
-  </body>
-</html>
+                </body>
+            </html>
 
