@@ -33,7 +33,7 @@
             $('.IN-widget').remove();                                                                                                                                                                                      }                                            
         // 2. Runs when the Profile() API call returns successfully  
         function displayProfiles(profiles) {                                                                                                                                                                                   member = profiles.values[0];                                              
-            document.getElementById("profiles").innerHTML =                                                                                                                                                                        "<p id=\"" + member.id + "\">Hello " +  member.firstName + " " + member.lastName + "</p>";
+            document.getElementById("profiles").innerHTML="<div id=\"" + member.id + "\">Hello " +  member.firstName + " " + member.lastName + "</div>";
         }                                                                                                                                                                                                                  </script>   
 
         <style type="text/css">
@@ -76,6 +76,10 @@
             p {
                 font-size: 18px;
                 line-height: 24px;                 
+            }
+            .linkedin {
+                margin-top: 10px;
+                color: white;
             }
 
             /* Video pitch and Action */
@@ -136,22 +140,29 @@
                                 <span class="icon-bar"/>
                                 </button>
                                 <a class="brand" href="#">IntervYOUer</a>
-                                <div class="nav-collapse collapse">
+                    <div class="nav-collapse collapse">
                                     <ul class="nav">
                                         <li class="active">
-                                        <a href="#">Home</a>
+                                            <a href="/">Home</a>
                                         </li>
                                         <li>
-                                        <a href="#about">About</a>
+                                            <a href="dashboard">Dashboard</a>
                                         </li>
                                         <li>
-                                        <a href="#contact">Contact</a>
+                                            <a href="#about">About</a>
+                                        </li>
+                                        <li>
+                                            <a href="#contact">Contact</a>
                                         </li>
                                     </ul>
-                                </div>
-                            </div>
-                        </div>
+                        <form class="navbar-form pull-right linkedin">
+                            <script type="IN/Login"></script>
+                            <div id="profiles"></div>
+                        </form>
                     </div>
+                </div>
+            </div>
+        </div>
 
                     <div class="container">
                         <div class="row-fluid heading">
@@ -187,10 +198,6 @@
                                     <div class="span6 offset2 order">
                                         <a class="coinbase-button" data-code="95ffa3e6808f3875b981f00dd973a967" data-button-style="custom_large" href="https://coinbase.com/checkouts/95ffa3e6808f3875b981f00dd973a967">Pay With Bitcoin</a>
                                         <script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
-                                    </div>
-                                    <div class="span6 offset2 order">
-                                        <script type="IN/Login"></script>
-                                        <div id="profiles"></div>
                                     </div>
                                     <div class="span8 offset2 social">
                                         <!-- AddThis Button BEGIN -->
