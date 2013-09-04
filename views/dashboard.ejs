@@ -1,7 +1,32 @@
 <! DOCTYPE html>
 <html>
-<% include layout %>
-<body>
-<% include navbar %>
-</body
-</html>
+    <% include layout %>
+    <style type="text/css">
+        .bs-docs-sidenav > li > a {
+            border: 1px solid #E5E5E5;
+            display: block;
+            margin: 0 0 -1px;
+            padding: 8px 14px;
+        }
+        .bs-docs-sidenav .icon-chevron-right {
+            float: right;
+            margin-top: 2px;
+            margin-right: -6px;
+            opacity: .25;
+        }
+        .bs-docs-sidenav {
+            width: 258px;
+            top: 80px;
+        }
+    </style>
+    <body>
+        <% include navbar %>
+        <div class="span3 bs-docs-sidebar">
+            <ul class="nav nav-list bs-docs-sidenav affix">
+                <li><a href="#uc-interviews"><i class="icon-chevron-right"></i>Upcoming Interviews</a></li>
+                <li><a href="#preferences"><i class="icon-chevron-right"></i> Preferences</a></li>
+                <li><a href="#past-interviews"><i class="icon-chevron-right"></i> Past Interviews</a></li>
+            </ul>
+        </div>
+        </body
+    </html>

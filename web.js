@@ -4,6 +4,9 @@ var fs = require('fs');
 var app = express.createServer(express.logger());
 
 app.use(express.static(__dirname + '/images'));
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+app.set('view options', {layout: false});
 
 app.get('/', function(request, response) {
   var result = fs.readFileSync('index.html').toString();
@@ -11,8 +14,7 @@ app.get('/', function(request, response) {
 });
 
 app.get('/dashboard', function(request, response) {
-  var result = fs.readFileSync('dashboard.html').toString();
-  response.send(result);
+  response.render('dashboard');
 });
 
 var port = process.env.PORT || 8080;
