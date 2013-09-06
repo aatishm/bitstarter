@@ -17,6 +17,7 @@ app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
 app.get('/', function(request, response) {
+  // TODO: Should we have a gmail like feature where if the customer is already logged in, should we redirect to dashboard?
   var result = fs.readFileSync('index.html').toString();
   response.send(result);
 });
@@ -32,7 +33,8 @@ var oa = new OAuth(
 );
 
 app.get('/linkedin_login', function(req, res) {
-    oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+    if (!req.session.oauth) {
+        oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
         if (error) {
             console.log(error);
             res.send("OAuth didn't work.")
@@ -42,7 +44,10 @@ app.get('/linkedin_login', function(req, res) {
             req.session.oauth.token_secret = oauth_token_secret;
             res.redirect("https://www.linkedin.com/uas/oauth/authorize?oauth_token=" + oauth_token);
         }
-    });
+       });
+    } else {
+        res.redirect('/dashboard');
+    }
 });
 
 app.get('/linkedin_callback', function(req, res) {
@@ -55,6 +60,8 @@ app.get('/linkedin_callback', function(req, res) {
             req.session.oauth.access_token_secret = oauth_access_token_secret;
             res.redirect("/dashboard");
         });
+    } else {
+        res.send('401', "You are not authorized to invoke this operation");
     }
 });
 
