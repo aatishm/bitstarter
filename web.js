@@ -1,17 +1,22 @@
 var express = require('express');
 var fs = require('fs');
 var OAuth= require('oauth').OAuth;
+var passport = require('passport');
+var OAuthStrategy = require('passport-oauth').OAuthStrategy;
 
 // Configure common middlewares. Precedence matters. Think of middleware as a stack of handlers that need to be executed one after another for every HTTP Request
 var app = express.createServer(
     express.logger(),
-    express.bodyParser(),
+    express.static(__dirname + '/public'),
     express.cookieParser(),
-    express.session({secret: "skjghskdjfhbqigohqdiouk"})
+    express.bodyParser(),
+    express.session({secret: "skjghskdjfhbqigohqdiouk"}),
+    passport.initialize(),
+//  See Sessions section on http://passportjs.org/guide/configure/
+    passport.session()
 );
 
 // configure views
-app.use(express.static(__dirname + '/images'));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
@@ -22,52 +27,67 @@ app.get('/', function(request, response) {
   response.send(result);
 });
 
-var oa = new OAuth(
-	"https://api.linkedin.com/uas/oauth/requestToken",
-	"https://api.linkedin.com/uas/oauth/accessToken",
-	"v8yfm0j3yo65",
-	"bbcoKI0lbsdpzr54",
-	"1.0",
-	"http://ec2-54-200-1-27.us-west-2.compute.amazonaws.com:8080/linkedin_callback",
-	"HMAC-SHA1"
-);
+passport.use('linkedin', new OAuthStrategy({
+    requestTokenURL: "https://api.linkedin.com/uas/oauth/requestToken",
+    accessTokenURL: "https://api.linkedin.com/uas/oauth/accessToken",
+    userAuthorizationURL: "https://api.linkedin.com/uas/oauth/authorize",
+    consumerKey: "v8yfm0j3yo65",
+    // TODO: Push this into a config file
+    consumerSecret: "bbcoKI0lbsdpzr54",
+    callbackURL: "http://ec2-54-200-1-27.us-west-2.compute.amazonaws.com:8080/auth/linkedin/callback"
+}, 
+function(token, tokenSecret, profile, done) {
+      // To keep the example simple, the user's LinkedIn profile is returned to
+      // represent the logged-in user.  In a typical application, you would want
+      // to associate the LinkedIn account with a user record in your database,
+      // and return that user instead.
+      
+      // See: http://passportjs.org/guide/configure/
+      return done(null, profile);
+}
+));
 
-app.get('/linkedin_login', function(req, res) {
-    if (!req.session.oauth) {
-        oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
-        if (error) {
-            console.log(error);
-            res.send("OAuth didn't work.")
-        } else {
-            req.session.oauth = {};
-            req.session.oauth.token = oauth_token;
-            req.session.oauth.token_secret = oauth_token_secret;
-            res.redirect("https://www.linkedin.com/uas/oauth/authorize?oauth_token=" + oauth_token);
-        }
-       });
-    } else {
-        res.redirect('/dashboard');
-    }
+passport.serializeUser(function(user, done) {
+    // TODO: Add custom serialization/deserialization logic here
+    done(null, user);
 });
 
-app.get('/linkedin_callback', function(req, res) {
-    if (req.session.oauth) {
-        req.session.oauth.verifier = req.query.oauth_verifier;
-        var oauth = req.session.oauth;
-
-        oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
-            req.session.oauth.access_token = oauth_access_token;
-            req.session.oauth.access_token_secret = oauth_access_token_secret;
-            res.redirect("/dashboard");
-        });
-    } else {
-        res.send('401', "You are not authorized to invoke this operation");
-    }
+passport.deserializeUser(function(id, done) {
+    done(null, id);
 });
 
-app.get('/dashboard', function(request, response) {
+// Redirect the user to the OAuth provider (linkedin) for authentication.  When
+// complete, the provider will redirect the user back to the application at
+//     /auth/provider/callback
+app.get('/login', passport.authenticate('linkedin'));
+
+// The OAuth provider has redirected the user back to the application.
+// Finish the authentication process by attempting to obtain an access
+// token.  If authorization was granted, the user will be logged in.
+// Otherwise, authentication has failed.
+app.get('/auth/linkedin/callback', 
+  passport.authenticate('linkedin', { successRedirect: '/dashboard',
+                                      failureRedirect: '/login' }));
+
+app.get('/dashboard', ensureAuthenticated, function(request, response) {
   response.render('dashboard');
 });
+
+app.get('/interview', ensureAuthenticated, function(request, response) {
+    fs.readFile('collaborative_editor.html', function(err, data) {
+        response.send(data.toString());
+    });
+});
+
+// Simple route middleware to ensure user is authenticated.
+//   Use this route middleware on any resource that needs to be protected.  If
+//   the request is authenticated (typically via a persistent login session),
+//   the request will proceed.  Otherwise, the user will be redirected to the
+//   login page.
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/login');
+}
 
 var port = process.env.PORT || 8080;
 app.listen(port, function() {

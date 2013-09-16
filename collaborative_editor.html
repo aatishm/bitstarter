@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+        <!-- Include twitter 3.0.0 bootstrap css/js minified files -->
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	
+	<script src="https://cdn.firebase.com/v0/firebase.js"></script>
+
+	<!-- Include CodeMirror file -->
+	<script src="editor/codemirror/lib/codemirror.js"></script>
+
+	<!-- Include all supported modes -->
+	<script src="editor/codemirror/mode/clike/clike.js"></script>
+	<script src="editor/codemirror/mode/perl/perl.js"></script>
+	<script src="editor/codemirror/mode/python/python.js"></script>
+	<script src="editor/codemirror/mode/php/php.js"></script>
+	<script src="editor/codemirror/mode/ruby/ruby.js"></script>
+	<script src="editor/codemirror/mode/javascript/javascript.js"></script>
+	<script src="editor/codemirror/mode/xml/xml.js"></script>
+	<script src="editor/codemirror/mode/css/css.js"></script>
+	<script src="editor/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+	<link rel="stylesheet" href="editor/codemirror/lib/codemirror.css">
+	<link rel="stylesheet" href="editor/codemirror/addon/hint/show-hint.css">
+	<script src="editor/codemirror/addon/hint/show-hint.js"></script>
+
+	<script src="editor/firepad.js"></script>
+	<link rel="stylesheet" href="editor/firepad.css" />
+
+	<!-- Include userlist. -->
+	<script src="editor/firepad-userlist.js"></script>
+	<link rel="stylesheet" href="editor/firepad-userlist.css" />
+
+	<style>
+	    .firepad {
+	      position: absolute; left: 20%; top: 0; bottom: 0; right: 0; height: auto;
+	    }
+            .chat {
+	      position: absolute;
+	      bottom: 0px;
+              width: 18%;
+	    }
+	    .languages-chat {
+              padding: 10px;
+            }
+	    .messages {
+                overflow: auto;
+		height: 200px;
+		padding-left: 15px;
+	    }
+	    .black-border-bg {
+                background-color: black;
+                border-color: black;
+            }
+            .userlist {
+                width: 18%;
+            }
+	</style>
+
+	<script>
+	$(document).ready(function() {
+		var firepadRef = new Firebase('https://collaborative-code-editor3.firebaseio.com/');
+	  
+  	    // $(#selector) breaks here since codemirror.js relies on appendChild api which is present only on DOM but not on jquery
+    	var codeMirror = CodeMirror(document.getElementById('firepad'), { lineNumbers: true, mode: 'text/x-java' });
+		
+		// iterate through the dropdown menu of languages and bind 'click' event to set mode for the codeMirror (Editor)
+		$('.languages li').map(function(index, domElem) {
+			$(domElem).find('a').click(function() {
+				codeMirror.setOption('mode', $(this).attr('data-mode'));
+			});
+		});
+  
+    	var userId = Math.floor(Math.random() * 9999999999).toString();
+		
+		// Create Firepad.
+    	var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {userId: userId});
+		
+    	// Create FirepadUserList (with our desired userId).
+    	var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), userId);
+		
+       // Initialize contents.
+	   firepad.on('ready', function() {
+		   if (firepad.isHistoryEmpty()) {
+    	      firepad.setText('Your Interview question: Given a binary tree, find whether it is a binary search tree or not');
+    	   }
+	   });
+  
+	  // Chat logic
+	  var chatRef = firepadRef.child('chats');
+	  // When the user presses enter on the textArea, write the message to firebase.
+	  $('#messageInput').keypress(function (e) {
+	    if (e.keyCode == 13) {
+	      var text = $('#messageInput').val();
+	      chatRef.push({name:firepadUserList.displayName_, text:text});
+	      $('#messageInput').val('');
+	    }
+	  });
+
+	  // Add a callback that is triggered for each chat message.
+	  chatRef.limit(10).on('child_added', function (snapshot) {
+	    var message = snapshot.val();
+	    $('<div/>').text(message.text).prepend($('<em/>').text(message.name+': ')).appendTo($('.messages'));
+	      $('.messages')[0].scrollTop = $('.messages')[0].scrollHeight;
+	    });
+	});
+	</script>
+</head>
+<body>
+	
+	<div class="languages-chat">
+		
+		<!-- Single button -->
+		<div class="btn-group">
+		  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+		    Programming Languages <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu languages" role="menu">
+		    <li><a data-target="#" data-mode="text/x-csrc">C</a></li>
+		    <li><a data-target="#" data-mode="text/x-csrc">C++</a></li>
+		    <li><a data-target="#" data-mode="text/x-java">Java</a></li>
+		    <li><a data-target="#" data-mode="text/x-csharp">C#</a></li>
+		    <li><a data-target="#" data-mode="ruby">Ruby</a></li>
+		    <li><a data-target="#" data-mode="perl">Perl</a></li>
+		    <li><a data-target="#" data-mode="php">PHP</a></li>
+		    <li><a data-target="#" data-mode="python">Python</a></li>
+		    <li><a data-target="#" data-mode="javascript">Javascript</a></li>
+		    <li><a data-target="#" data-mode="htmlmixed">HTML</a></li>
+		    <li><a data-target="#" data-mode="css">CSS</a></li>
+		    <li><a data-target="#" data-mode="xml">XML</a></li>
+		  </ul>
+		</div>
+		
+		<div id="userlist" class="userlist"></div>
+		
+		<div class="chat panel panel-primary">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">Chat</h3>
+		  </div>
+		  <div class="messages"></div>
+		  <input type="text" id='messageInput' class="form-control input" style="background-color:#f5f5f5" placeholder="Message...">
+		</div>
+	</div>
+	
+	<!-- Right pane for firepad-->
+	<div id="firepad"></div>
+</body>
