@@ -73,6 +73,13 @@
 				codeMirror.setOption('mode', $(this).attr('data-mode'));
 			});
 		});
+
+        // Select the dropdown value (from the list) and set on the button
+		$(".dropdown-menu li a").click(function(){
+		    $(".btn:first-child").text($(this).text());
+		    $(".btn:first-child").val($(this).text());
+		});
+
   
     	var userId = Math.floor(Math.random() * 9999999999).toString();
 		
@@ -131,6 +138,7 @@
 		    <li><a data-target="#" data-mode="htmlmixed">HTML</a></li>
 		    <li><a data-target="#" data-mode="css">CSS</a></li>
 		    <li><a data-target="#" data-mode="xml">XML</a></li>
+                    <li><a data-target="#" data-mode="text/plain">Plain Text</a></li>
 		  </ul>
 		</div>
 		
