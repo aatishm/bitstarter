@@ -1,6 +1,5 @@
 var express = require('express');
 var fs = require('fs');
-var OAuth= require('oauth').OAuth;
 var passport = require('passport');
 var OAuthStrategy = require('passport-oauth').OAuthStrategy;
 
