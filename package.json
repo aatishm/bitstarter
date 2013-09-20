@@ -9,7 +9,8 @@
   "dependencies": {
     "express": "2.5.x",
     "ejs": "~0.8.4",
-    "passport": "0.1.x"
+    "passport": "0.1.x",
+    "passport-oauth": "1.0.x"
   },
   "engines": {
     "node": "0.8.x",
