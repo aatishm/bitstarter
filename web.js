@@ -1,3 +1,5 @@
+// TODO: Node best practice is to include the node_modules directory in your source repository for faster deploys and dev/prod parity.
+// http://12factor.net/dev-prod-parity
 var express = require('express');
 var fs = require('fs');
 var passport = require('passport');
@@ -31,9 +33,8 @@ passport.use('linkedin', new OAuthStrategy({
     accessTokenURL: "https://api.linkedin.com/uas/oauth/accessToken",
     userAuthorizationURL: "https://api.linkedin.com/uas/oauth/authorize",
     consumerKey: "v8yfm0j3yo65",
-    // TODO: Push this into a config file
-    consumerSecret: "bbcoKI0lbsdpzr54",
-    callbackURL: "http://ec2-54-200-1-27.us-west-2.compute.amazonaws.com:8080/auth/linkedin/callback"
+    consumerSecret: process.env.LINKEDIN_SECRET,
+    callbackURL: process.env.LINKEDIN_CALLBACK_URL + "auth/linkedin/callback"
 }, 
 function(token, tokenSecret, profile, done) {
       // To keep the example simple, the user's LinkedIn profile is returned to

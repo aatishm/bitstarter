@@ -1,0 +1,4 @@
+I needed a way to set different config values for prod vs staging vs development. For prod/staging, since we are leveraging on Heroku to host our webapp; hence we could use 
+Heroku's config  https://devcenter.heroku.com/articles/config-vars to set different config values. Below is an example on how to set config for an app
+
+  heroku config:set LINKEDIN_SECRET=secret LINKEDIN_CALLBACK_URL=callbackUrl --app=intervyouer-integ
