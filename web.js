@@ -44,15 +44,12 @@ app.get('/login', passport.authenticate('linkedin'));
 // Finish the authentication process by attempting to obtain an access
 // token.  If authorization was granted, the user will be logged in.
 // Otherwise, authentication has failed.
-app.get('/auth/linkedin/callback', function(req, res, next) {
-  passport.authenticate('linkedin', function(err, user, info) {
-    if (err) { return next(err); }
-    if (!user) { return res.redirect('/login'); }
-    req.logIn(user, function(err) {
-      if (err) { return next(err); }
+app.get('/auth/linkedin/callback',
+  passport.authenticate('linkedin', { failureRedirect: '/login' }), 
+  function(req, res) {
       ses.sendEmail({
           Source: "aatish.mandelecha@gmail.com",
-          Destination: {ToAddresses: ["aatish.mandelecha@gmail.com"]},
+          Destination: {ToAddresses: [req.user._json.emailAddress]},
           Message: {
             Subject: {
               Data: "Welcome to Intervyouer!",
@@ -60,7 +57,7 @@ app.get('/auth/linkedin/callback', function(req, res, next) {
             },
             Body: {
               Text: {
-                Data: "Welcome! We're happy you joined us. Your login id is aatish.mandelecha@gmail.com",
+                Data: "Welcome! We're happy you joined us. Your login id is same as your Linkedin id: " + req.user._json.emailAddress,
                 Charset: "UTF-8"
               }
             }
@@ -70,12 +67,9 @@ app.get('/auth/linkedin/callback', function(req, res, next) {
           if (err) { console.log(err); }
           if (data) { console.log(data); }
       });
-      return res.redirect('/dashboard');
-    });
-
-  })(req, res, next);
-
-});
+      res.redirect('/dashboard');
+    }
+);
 
 app.get('/dashboard', ensureAuthenticated, function(request, response) {
   response.render('dashboard');
