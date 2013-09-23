@@ -10,7 +10,8 @@
     "express": "2.5.x",
     "ejs": "~0.8.4",
     "passport": "0.1.x",
-    "passport-oauth": "1.0.x"
+    "passport-oauth": "1.0.x",
+    "aws-sdk": "1.6.0"
   },
   "engines": {
     "node": "0.8.x",

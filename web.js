@@ -4,6 +4,7 @@ var express = require('express');
 var fs = require('fs');
 var passport = require('passport');
 var authentication = require('./authentication.js');
+var aws = require("./aws.js");
 
 // Configure common middlewares. Precedence matters. Think of middleware as a stack of handlers that need to be executed one after another for every HTTP Request
 var app = express.createServer(
@@ -31,6 +32,9 @@ app.get('/', function(request, response) {
 // Configure Passport
 authentication.configurePassport(passport);
 
+// Fetch AWS SES object
+var ses = aws.ses(); 
+
 // Redirect the user to the OAuth provider (linkedin) for authentication.  When
 // complete, the provider will redirect the user back to the application at
 //     /auth/provider/callback
@@ -40,9 +44,38 @@ app.get('/login', passport.authenticate('linkedin'));
 // Finish the authentication process by attempting to obtain an access
 // token.  If authorization was granted, the user will be logged in.
 // Otherwise, authentication has failed.
-app.get('/auth/linkedin/callback', 
-  passport.authenticate('linkedin', { successRedirect: '/dashboard',
-                                      failureRedirect: '/login' }));
+app.get('/auth/linkedin/callback', function(req, res, next) {
+  passport.authenticate('linkedin', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/login'); }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      ses.sendEmail({
+          Source: "aatish.mandelecha@gmail.com",
+          Destination: {ToAddresses: ["aatish.mandelecha@gmail.com"]},
+          Message: {
+            Subject: {
+              Data: "Welcome to Intervyouer!",
+              Charset: "UTF-8"
+            },
+            Body: {
+              Text: {
+                Data: "Welcome! We're happy you joined us. Your login id is aatish.mandelecha@gmail.com",
+                Charset: "UTF-8"
+              }
+            }
+          },
+          ReturnPath: "aatish.mandelecha@gmail.com"
+        }, function(err, data) {
+          if (err) { console.log(err); }
+          if (data) { console.log(data); }
+      });
+      return res.redirect('/dashboard');
+    });
+
+  })(req, res, next);
+
+});
 
 app.get('/dashboard', ensureAuthenticated, function(request, response) {
   response.render('dashboard');
