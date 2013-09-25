@@ -48,7 +48,7 @@ app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/login' }), 
   function(req, res) {
       ses.sendEmail({
-          Source: "aatish.mandelecha@gmail.com",
+          Source: "support@intervyouer.com",
           Destination: {ToAddresses: [req.user._json.emailAddress]},
           Message: {
             Subject: {
@@ -62,7 +62,7 @@ app.get('/auth/linkedin/callback',
               }
             }
           },
-          ReturnPath: "aatish.mandelecha@gmail.com"
+          ReturnPath: "support@intervyouer.com"
         }, function(err, data) {
           if (err) { console.log(err); }
           if (data) { console.log(data); }
