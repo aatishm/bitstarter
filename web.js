@@ -70,7 +70,7 @@ app.get('/auth/linkedin/callback',
           if (err) { console.log(err); }
           if (data) { console.log(data); }
       });
-      res.redirect('/dashboard');
+      res.redirect('/dashboard/');
     }
 );
 
@@ -97,7 +97,7 @@ app.get('/logout', function(request, response) {
 //   login page.
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login');
+  res.redirect('/login/');
 }
 
 var port = process.env.PORT || 8080;
