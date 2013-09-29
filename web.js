@@ -9,10 +9,12 @@ var aws = require("./aws.js");
 // Configure common middlewares. Precedence matters. Think of middleware as a stack of handlers that need to be executed one after another for every HTTP Request
 var app = express.createServer(
     express.logger(),
+    // Use app.use('/static', middleware) so that express.static is not called on every request. See SO below:
+    // http://stackoverflow.com/questions/12695591/node-js-express-js-how-does-app-router-work
     express.static(__dirname + '/public'),
     express.cookieParser(),
     express.bodyParser(),
-    express.session({secret: "skjghskdjfhbqigohqdiouk"}),
+    express.session({secret: "keyboard cat"}),
     passport.initialize(),
 //  See Sessions section on http://passportjs.org/guide/configure/
     passport.session()
@@ -39,14 +41,14 @@ var ses = aws.ses();
 // Redirect the user to the OAuth provider (linkedin) for authentication.  When
 // complete, the provider will redirect the user back to the application at
 //     /auth/provider/callback
-app.get('/login', passport.authenticate('linkedin'));
+app.get('/login', passport.authenticate('linkedin'), function(req, res) {});
 
 // The OAuth provider has redirected the user back to the application.
 // Finish the authentication process by attempting to obtain an access
 // token.  If authorization was granted, the user will be logged in.
 // Otherwise, authentication has failed.
 app.get('/auth/linkedin/callback',
-  passport.authenticate('linkedin', { failureRedirect: '/login' }), 
+  passport.authenticate('linkedin', { failureRedirect: '/' }), 
   function(req, res) {
       ses.sendEmail({
           Source: "Intervyouer <support@intervyouer.com>",
@@ -80,6 +82,12 @@ app.get('/interview', ensureAuthenticated, function(request, response) {
     fs.readFile('collaborative_editor.html', function(err, data) {
         response.send(data.toString());
     });
+});
+
+app.get('/logout', function(request, response) {
+    request.logout();
+    request.session.destroy();
+    response.redirect('/');
 });
 
 //  Simple route middleware to ensure user is authenticated.

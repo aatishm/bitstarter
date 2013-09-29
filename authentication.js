@@ -27,7 +27,7 @@ exports.configurePassport = function(passport) {
        done(null, user);
     });
 
-    passport.deserializeUser(function(id, done) {
-        done(null, id);
+    passport.deserializeUser(function(obj, done) {
+        done(null, obj);
     });
 }
