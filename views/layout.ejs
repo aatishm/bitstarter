@@ -1,117 +1,104 @@
-    <head>
-        <meta charset="utf-8">
-        <title>Practice Interviews With World Class Professionals</title>
-        <link rel="shortcut icon" href="NP.ico" type="image/x-icon">
-        <link rel="icon" href="NP.ico" type="image/x-icon">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://d396qusza40orc.cloudfront.net/startup/code/bootstrap-combined.no-icons.min.css">
-        <link href="http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic" rel="stylesheet" type="text/css"/>
-        <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,300,400,600,700,800" rel="stylesheet" type="text/css"/>
-        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css"/>
-        <link rel="stylesheet" href="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fsocial-buttons.css"/>
+<meta charset="utf-8">
+<title>Practice Interviews With World Class Professionals</title>
+<link rel="shortcut icon" href="NP.ico" type="image/x-icon">
+<link rel="icon" href="NP.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://d396qusza40orc.cloudfront.net/startup/code/bootstrap-combined.no-icons.min.css">
+<link href="http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,300,400,600,700,800" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css"/>
+<link rel="stylesheet" href="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fsocial-buttons.css"/>
 
-        <script src="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fjquery.js"></script>
-        <script src="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fbootstrap.js"></script>
+<script src="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fjquery.js"></script>
+<script src="https://d396qusza40orc.cloudfront.net/startup%2Fcode%2Fbootstrap.js"></script>
 
-        <!-- Linkedin Sign up -->                                                                                                   
-        <script type="text/javascript" src="http://platform.linkedin.com/in.js">
-            api_key: v8yfm0j3yo65                                                                                                                   
-            onLoad: onLinkedInLoad                                                                                                                              
-            <!--authorize: true-->
-        </script>
+<style type="text/css">
 
-        <script type="text/javascript">
-            // 2. Runs when the JavaScript framework is loaded                                                                                                                                                      
-        function onLinkedInLoad() {
-            IN.Event.on(IN, "auth", onLinkedInAuth);                                                                                                                                                                       }
+    @media (min-width: 980px) {
+	body {
+	    padding-top: 60px;
+	}
+	.linediv-l {
+	    border-right: 1px white solid;
+	}
+	.linediv-r {
+	    border-left: 1px white solid;
+	}
+    }
 
-        function onLinkedInAuth() {
-            IN.API.Profile("me").result(displayProfiles);                                                                                                                                                                      // remove the linkedin button element
-            $('.IN-widget').remove();                                                                                                                                                                                      }                                            
-        // 2. Runs when the Profile() API call returns successfully  
-        function displayProfiles(profiles) {                                                                                                                                                                                   member = profiles.values[0];                                              
-            document.getElementById("profiles").innerHTML="<div id=\"" + member.id + "\">Hello " +  member.firstName + " " + member.lastName + "</div>";
-        }                                                                                                                                                                                                                  </script>   
+    /* Phones/Tablets/Devices */
+    @media (max-width: 460px) {
+	.linediv-l {
+	    border-bottom: 1px white solid;
+	}
+	.linediv-r {
+	    border-top: 1px white solid;
+	}
+    }
 
-        <style type="text/css">
+    /* Main body and headings */
+    body {
+	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    }
+   .heading, .subheading {
+	font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+	text-align: center
+    }
+    p.lead {
+	padding-top: 1.5%;
+	font-size: 24px;
+	line-height: 30px;                                                             
+    }
+    .linkedin {
+	margin-top: 10px;
+	color: white;
+    }
 
-            @media (min-width: 980px) {
-                body {
-                    padding-top: 60px;
-                }
-                .linediv-l {
-                    border-right: 1px white solid;
-                }
-                .linediv-r {
-                    border-left: 1px white solid;
-                }
-            }
+    /* Video pitch and Action */
+    .pitch {
+	padding: 2.5% 0%;
+    }
+    .order {
+	padding: 2% 0%;
+	color: white;
+    }
+    .actions {
+	background-color: #343434;
+	padding: 3% 0%;
+    }
+    .video, .thermometer, .order, .social, .statistics {
+	text-align: center;
+    }
+    .statistics h3, .statistics p {
+	color: white;
+    }
 
-            /* Phones/Tablets/Devices */
-            @media (max-width: 460px) {
-                .linediv-l {
-                    border-bottom: 1px white solid;
-                }
-                .linediv-r {
-                    border-top: 1px white solid;
-                }
-            }
+    /* Marketing Copy and Footer */
+    .copy {
+	padding-top: 2.5%;
+	padding-bottom: 2.5%;
+	text-align: justify;
+    }
+    .asset {
+	padding: 2.5% 0%;
+    }
 
-            /* Main body and headings */
-            body {
-                font-family: 'Open Sans', Helvetica, Arial, sans-serif;
-            }
-           .heading, .subheading {
-                font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
-                text-align: center
-            }
-            p.lead {
-                padding-top: 1.5%;
-                font-size: 24px;
-                line-height: 30px;                                                             
-            }
-            p {
-                font-size: 18px;
-                line-height: 24px;                 
-            }
-            .linkedin {
-                margin-top: 10px;
-                color: white;
-            }
+    .footer {
+	color: #cccccc;
+	text-align: center;
+    }
+    .footer p {
+	font-size: 11px;
+    }
 
-            /* Video pitch and Action */
-            .pitch {
-                padding: 2.5% 0%;
-            }
-            .order {
-                padding: 2% 0%;
-                color: white;
-            }
-            .actions {
-                background-color: #343434;
-                padding: 3% 0%;
-            }
-            .video, .thermometer, .order, .social, .statistics {
-                text-align: center;
-            }
-            .statistics h3, .statistics p {
-                color: white;
-            }
+    .footer a {                                                                                                    
+	color: #ccccff;
+    }
 
-            /* Marketing Copy and Footer */
-            .copy {
-                padding-top: 2.5%;
-                padding-bottom: 2.5%;
-                text-align: justify;
-            }
-            .asset {
-                padding: 2.5% 0%;
-            }
+    /* http://support.addthis.com/customer/portal/questions/1136093-share-buttons-in-center-position */      
+    .addthis_toolbox div {
+	width: 180px;
+	margin: 0 auto;
+    }
+</style>
 
-            .footer {
-                color: #cccccc;
-                text-align: center;
-            }
-        </style>
-</head>            
-      

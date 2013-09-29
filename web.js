@@ -24,9 +24,7 @@ app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
 app.get('/', function(request, response) {
-  // TODO: Should we have a gmail like feature where if the customer is already logged in, should we redirect to dashboard?
-  var result = fs.readFileSync('index.html').toString();
-  response.send(result);
+  response.render('index', {user: request.user});
 });
 
 // Configure Passport
@@ -34,6 +32,9 @@ authentication.configurePassport(passport);
 
 // Fetch AWS SES object
 var ses = aws.ses(); 
+
+// TODO: I am not sure what is wrong but on Chrome, when I click on 'Join Now', even after process restarts, it is not asking me for linkedin credentials
+// however on Firefox, that is not the case (process restart or not)
 
 // Redirect the user to the OAuth provider (linkedin) for authentication.  When
 // complete, the provider will redirect the user back to the application at
@@ -48,7 +49,7 @@ app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/login' }), 
   function(req, res) {
       ses.sendEmail({
-          Source: "support@intervyouer.com",
+          Source: "Intervyouer <support@intervyouer.com>",
           Destination: {ToAddresses: [req.user._json.emailAddress]},
           Message: {
             Subject: {
@@ -72,7 +73,7 @@ app.get('/auth/linkedin/callback',
 );
 
 app.get('/dashboard', ensureAuthenticated, function(request, response) {
-  response.render('dashboard');
+  response.render('dashboard', {user: request.user});
 });
 
 app.get('/interview', ensureAuthenticated, function(request, response) {
