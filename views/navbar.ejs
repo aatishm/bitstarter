@@ -16,7 +16,6 @@
 			<a href="#contact">Contact</a>
 		    </li>
 		</ul>
-                <div class="pull-right">
                 <% if (user) {%>
 		<li class="dropdown pull-right">
                     <a href="#" class="dropdown-toggle navbar-text" data-toggle="dropdown"> <%= user.displayName %> <b class="caret"></b></a>
@@ -27,9 +26,8 @@
                     </ul>
                 </li>
                 <% } else {%>
-		    <a href="/login" class="btn active">Join Now!</a>
+		    <a href="/login" class="btn active pull-right">Join Now!</a>
                 <% } %>
-		</form>
 	    </div>
 	</div>
     </div>
