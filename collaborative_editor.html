@@ -71,16 +71,11 @@
 		$('.languages li').map(function(index, domElem) {
 			$(domElem).find('a').click(function() {
 				codeMirror.setOption('mode', $(this).attr('data-mode'));
+                                // Set the text of the button as the text of the selected anchor tag (programming language value)
+                                $(".btn:first-child").text($(this).text());
 			});
 		});
 
-        // Select the dropdown value (from the list) and set on the button
-		$(".dropdown-menu li a").click(function(){
-		    $(".btn:first-child").text($(this).text());
-		    $(".btn:first-child").val($(this).text());
-		});
-
-  
     	var userId = Math.floor(Math.random() * 9999999999).toString();
 		
 		// Create Firepad.

@@ -68,7 +68,7 @@ app.get('/auth/linkedin/callback',
           if (err) { console.log(err); }
           if (data) { console.log(data); }
       });
-      res.redirect('/dashboard');
+      res.redirect('/');
     }
 );
 
