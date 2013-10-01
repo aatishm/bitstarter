@@ -1,32 +1,58 @@
 <! DOCTYPE html>
 <html>
-    <% include layout %>
-    <style type="text/css">
-        .bs-docs-sidenav > li > a {
-            border: 1px solid #E5E5E5;
-            display: block;
-            margin: 0 0 -1px;
-            padding: 8px 14px;
-        }
-        .bs-docs-sidenav .icon-chevron-right {
-            float: right;
-            margin-top: 2px;
-            margin-right: -6px;
-            opacity: .25;
-        }
-        .bs-docs-sidenav {
-            width: 258px;
-            top: 80px;
-        }
-    </style>
+    <head>
+        <% include layout %>
+         <!-- TODO: Push this into a separate file -->
+         <script type="text/javascript">
+            $(document).ready(function(){
+                $("#interviewerSettingsId").click(function() {
+                    // clear message
+                    $('#successLabel').hide(); 
+                    $.ajax({
+                        type: "POST",
+		        url: "/interviewer/" + $('#linkedin_id').attr('data-id'),
+	                data: $("#interviewerSettingsFormId").serialize(), // serializes the form's elements.
+                        success: function(data) {
+                            console.log("Success");
+                            $('#successLabel').show();
+                        }    
+                    });
+                    // don't let the event bubble
+                    return false;
+                }); 
+          });
+         </script>
+    </head>
     <body>
         <% include navbar %>
-        <div class="span3 bs-docs-sidebar">
-            <ul class="nav nav-list bs-docs-sidenav affix">
-                <li><a href="#uc-interviews"><i class="icon-chevron-right"></i>Upcoming Interviews</a></li>
-                <li><a href="#preferences"><i class="icon-chevron-right"></i> Preferences</a></li>
-                <li><a href="#past-interviews"><i class="icon-chevron-right"></i> Past Interviews</a></li>
-            </ul>
-        </div>
-        </body
-    </html>
+        <div class="container-fluid">
+            <div class="row-fluid">
+		<div class="span3">
+                    <div class="well sidebar-nav">
+			<ul class="nav nav-list">
+		            <li><a href="#">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
+                            <li><a href="#">Preferences<i class="icon-chevron-right"></i></a></li>
+                            <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
+                        </ul>
+		    </div>
+		</div>
+                <div class="span9">
+                    <form id="interviewerSettingsFormId" class="well">
+                        <div id="linkedin_id" data-id="<%= user.id %>"></div>
+                        <label>Interview Session Practice Price</label>
+                        <input name="price" type="text" class="span3" placeholder="Interview Session price (in $)">
+                        <label>Programming Languages</label>
+                        <textarea name="languages" class="input-xlarge" id="textarea" rows="3" placeholder="Programming Languages you are awesome at!"></textarea>
+                        <label>Area of expertise</label>
+                        <textarea name="areaOfExpertise" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."></textarea>
+                        <label>Tell us more about yourself</label>
+                        <textarea name="description" class="input-xlarge" id="textarea" rows="3" placeholder="Why are you so awesome at taking interviews? Help interviewees to know more about you."></textarea>
+                        <br>
+                        <button id="interviewerSettingsId" type="submit" class="btn btn-primary">Submit</button>
+                        <label id="successLabel" style="display:none">Your changes have been submitted!</label>
+                    </form>
+                </div>
+	    </div>
+	</div>
+   </body>
+</html>

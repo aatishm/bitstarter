@@ -34,6 +34,7 @@ authentication.configurePassport(passport);
 
 // Fetch AWS SES object
 var ses = aws.ses(); 
+var dynamoDB = aws.dynamoDB();
 
 // TODO: I am not sure what is wrong but on Chrome, when I click on 'Join Now', even after process restarts, it is not asking me for linkedin credentials
 // however on Firefox, that is not the case (process restart or not)
@@ -50,6 +51,18 @@ app.get('/login', passport.authenticate('linkedin'), function(req, res) {});
 app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/' }), 
   function(req, res) {
+      // Create a entry into Interviewer table
+      dynamoDB.putItem({
+          TableName: "Interviewer",
+          Item: {
+              linkedin_id: {S: req.user.id}
+          }
+ 
+      }, function(err, data) {
+          logErrorAndData(err, data, "DynamoDB");
+      });
+      
+      // Send email to the customer
       ses.sendEmail({
           Source: "Intervyouer <support@intervyouer.com>",
           Destination: {ToAddresses: [req.user._json.emailAddress]},
@@ -67,13 +80,16 @@ app.get('/auth/linkedin/callback',
           },
           ReturnPath: "support@intervyouer.com"
         }, function(err, data) {
-          if (err) { console.log(err); }
-          if (data) { console.log(data); }
+            logErrorAndData(err, data, "SES");
       });
-      res.redirect('/dashboard/');
+      res.redirect('/dashboard');
     }
 );
 
+function logErrorAndData(err, data, moduleName) {
+    if (err) { console.log(moduleName + " Error: " + err); }
+    if (data) { console.log(moduleName + " Data: " + data); }
+}
 app.get('/dashboard', ensureAuthenticated, function(request, response) {
   response.render('dashboard', {user: request.user});
 });
@@ -84,6 +100,36 @@ app.get('/interview', ensureAuthenticated, function(request, response) {
     });
 });
 
+app.post('/interviewer/:id', function(req, res) {
+    dynamoDB.updateItem({
+          TableName: "Interviewer",
+          Key: {
+              linkedin_id: {S: req.params.id}
+          },
+          AttributeUpdates: {
+              price: {
+                  Action: "PUT",
+                  Value: {S: req.body.price}
+              },
+              languages: {
+                  Action: "PUT",
+                  Value: {S: req.body.languages}
+              },
+              areaOfExpertise: {
+                  Action: "PUT",
+                  Value: {S: req.body.areaOfExpertise}
+              },
+              description: {
+                  Action: "PUT",
+                  Value: {S: req.body.description}
+             }
+          }
+      }, function(err, data) {
+          logErrorAndData(err, data, "DynamoDB_Update");
+      });
+
+    res.send('success');
+});
 app.get('/logout', function(request, response) {
     request.logout();
     request.session.destroy();
