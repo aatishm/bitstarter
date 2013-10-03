@@ -36,24 +36,30 @@ authentication.configurePassport(passport);
 var ses = aws.ses(); 
 var dynamoDB = aws.dynamoDB();
 
+app.get('/login', passport.authenticate('linkedin'));
+
 // TODO: I am not sure what is wrong but on Chrome, when I click on 'Join Now', even after process restarts, it is not asking me for linkedin credentials
 // however on Firefox, that is not the case (process restart or not)
 
 // Redirect the user to the OAuth provider (linkedin) for authentication.  When
 // complete, the provider will redirect the user back to the application at
 //     /auth/provider/callback
-app.get('/login', passport.authenticate('linkedin'), function(req, res) {});
+app.get('/signUp/:candidateType', function(req, res, next) {
+    // Wrapping passport.authenticate middleware in order to store candidateType in session for future actions
+    req.session.candidateType = req.params.candidateType;
+    return passport.authenticate('linkedin')(req, res, next);
+});
 
 // The OAuth provider has redirected the user back to the application.
 // Finish the authentication process by attempting to obtain an access
-// token.  If authorization was granted, the user will be logged in.
+// token. If authorization was granted, the user will be logged in.
 // Otherwise, authentication has failed.
 app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/' }), 
   function(req, res) {
-      // Create a entry into Interviewer table
+      // Create a entry into table
       dynamoDB.putItem({
-          TableName: "Interviewer",
+          TableName: req.session.candidateType === "interviewer" ? "Interviewer" : "Interviewee",
           Item: {
               linkedin_id: {S: req.user.id}
           }
