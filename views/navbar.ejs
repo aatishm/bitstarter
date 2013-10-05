@@ -20,13 +20,13 @@
 		<li class="dropdown pull-right">
                     <a href="#" class="dropdown-toggle navbar-text" data-toggle="dropdown"> <%= user.displayName %> <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                       <li><a href="/dashboard/">Dashboard</a></li>
+                       <li><a href="/dashboard/<%= user.candidateType %>">Dashboard</a></li>
                        <li class="divider"></li>
                        <li><a href="/logout/">Logout</a></li>
                     </ul>
                 </li>
                 <% } else {%>
-		    <a href="/login/interviewer" class="btn active pull-right">Sign In</a>
+		    <a href="/login/" class="btn active pull-right">Sign In</a>
                 <% } %>
 	    </div>
 	</div>

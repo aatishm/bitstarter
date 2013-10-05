@@ -47,8 +47,59 @@ app.get('/login', passport.authenticate('linkedin'));
 app.get('/signUp/:candidateType', function(req, res, next) {
     // Wrapping passport.authenticate middleware in order to store candidateType in session for future actions
     req.session.candidateType = req.params.candidateType;
+    req.session.pageType = 'signUp';
     return passport.authenticate('linkedin')(req, res, next);
 });
+
+function putIntoDynamo(req, candidateType, callback) {
+console.log("Profile Id: " + req.user.id);
+dynamoDB.putItem({
+    TableName: "Interviewer",
+    Item: {
+        linkedin_id: {S: req.user.id},
+        candidateType: {S: candidateType}
+    }
+}, function(err, data) {
+      logErrorAndData(err, data, "DynamoDB_Put_" + candidateType);
+      callback(data);
+   }
+);
+}
+
+function getFromDynamo(req, callback) {
+dynamoDB.getItem({
+    TableName: "Interviewer",
+    Key: {
+        linkedin_id: {S: req.user.id}
+    }
+}, function(err, data) {
+      logErrorAndData(err, data, "DynamoDB_Get");
+      callback(data);
+   }
+);
+}
+
+function sendEmail(req) {
+ses.sendEmail({
+    Source: "Intervyouer <support@intervyouer.com>",
+    Destination: {ToAddresses: [req.user._json.emailAddress]},
+        Message: {
+            Subject: {
+                Data: "Welcome to Intervyouer!",
+                Charset: "UTF-8"
+            },
+            Body: {
+                Text: {
+                    Data: "Welcome! We're happy you joined us. Your login id is same as your Linkedin id: " + req.user._json.emailAddress,
+                    Charset: "UTF-8"
+                }
+            }
+          },
+        ReturnPath: "support@intervyouer.com"
+    }, function(err, data) {
+            logErrorAndData(err, data, "SES");
+       }
+);}
 
 // The OAuth provider has redirected the user back to the application.
 // Finish the authentication process by attempting to obtain an access
@@ -57,47 +108,53 @@ app.get('/signUp/:candidateType', function(req, res, next) {
 app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/' }), 
   function(req, res) {
-      // Create a entry into table
-      dynamoDB.putItem({
-          TableName: req.session.candidateType === "interviewer" ? "Interviewer" : "Interviewee",
-          Item: {
-              linkedin_id: {S: req.user.id}
-          }
- 
-      }, function(err, data) {
-          logErrorAndData(err, data, "DynamoDB");
-      });
-      
-      // Send email to the customer
-      ses.sendEmail({
-          Source: "Intervyouer <support@intervyouer.com>",
-          Destination: {ToAddresses: [req.user._json.emailAddress]},
-          Message: {
-            Subject: {
-              Data: "Welcome to Intervyouer!",
-              Charset: "UTF-8"
-            },
-            Body: {
-              Text: {
-                Data: "Welcome! We're happy you joined us. Your login id is same as your Linkedin id: " + req.user._json.emailAddress,
-                Charset: "UTF-8"
-              }
-            }
-          },
-          ReturnPath: "support@intervyouer.com"
-        }, function(err, data) {
-            logErrorAndData(err, data, "SES");
-      });
-      res.redirect('/dashboard');
-    }
+      for (var key in req.user) { console.log("Key: " + key + "vAL: " + req.user[key]); }
+      var candidateType = req.session.candidateType === "interviewer" ? "interviewer" : "interviewee";
+      if (req.session.pageType === 'signUp') {
+          // Create a entry into table
+          putIntoDynamo(req, candidateType, function(data) {
+              // Send email to the customer
+              sendEmail(req);
+              // Redirect to dashboard
+              candidateType === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
+          });
+      }
+      else {
+         // it is a login page. Retrieve item from dynamo db
+         getFromDynamo(req, function(data) {
+             if (data['Item'] != null) {
+                 // Redirect to dashboard
+                 candidateType === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
+             }
+             else {
+                 // Since user is already authenticated by linkedin but is not found in our dynamo, we want to logout the session.
+                 logout(req); 
+                 res.render('error');
+             }
+         });
+      }
+  }
 );
 
 function logErrorAndData(err, data, moduleName) {
     if (err) { console.log(moduleName + " Error: " + err); }
-    if (data) { console.log(moduleName + " Data: " + data); }
+    if (data) { 
+        console.log("Module Name: " + moduleName + "\n");
+        for (var key in data) {
+            console.log("Key: " + key + "Val: " + data[key]); 
+        }
+    }
 }
-app.get('/dashboard', ensureAuthenticated, function(request, response) {
-  response.render('dashboard', {user: request.user});
+
+app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
+  if (request.params.type === "interviewer") {
+      request.user.candidateType = "interviewer";
+      response.render('interviewerDashboard', {user: request.user});
+  }
+  else {
+      request.user.candidateType = "interviewee";
+      response.render('intervieweeDashboard', {user: request.user});
+  }
 });
 
 app.get('/interview', ensureAuthenticated, function(request, response) {
@@ -136,9 +193,15 @@ app.post('/interviewer/:id', function(req, res) {
 
     res.send('success');
 });
-app.get('/logout', function(request, response) {
+
+function logout(request) {
+    request.user = false;
     request.logout();
     request.session.destroy();
+}
+
+app.get('/logout', function(request, response) {
+    logout(request);
     response.redirect('/');
 });
 
