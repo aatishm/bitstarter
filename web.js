@@ -52,7 +52,6 @@ app.get('/signUp/:candidateType', function(req, res, next) {
 });
 
 function putIntoDynamo(req, candidateType, callback) {
-console.log("Profile Id: " + req.user.id);
 dynamoDB.putItem({
     TableName: "Interviewer",
     Item: {
@@ -108,9 +107,8 @@ ses.sendEmail({
 app.get('/auth/linkedin/callback',
   passport.authenticate('linkedin', { failureRedirect: '/' }), 
   function(req, res) {
-      for (var key in req.user) { console.log("Key: " + key + "vAL: " + req.user[key]); }
-      var candidateType = req.session.candidateType === "interviewer" ? "interviewer" : "interviewee";
       if (req.session.pageType === 'signUp') {
+          var candidateType = req.session.candidateType === "interviewer" ? "interviewer" : "interviewee";
           // Create a entry into table
           putIntoDynamo(req, candidateType, function(data) {
               // Send email to the customer
@@ -124,7 +122,7 @@ app.get('/auth/linkedin/callback',
          getFromDynamo(req, function(data) {
              if (data['Item'] != null) {
                  // Redirect to dashboard
-                 candidateType === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
+                 data['Item'].candidateType.S === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
              }
              else {
                  // Since user is already authenticated by linkedin but is not found in our dynamo, we want to logout the session.
