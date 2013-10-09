@@ -53,10 +53,11 @@ app.get('/signUp/:candidateType', function(req, res, next) {
 
 function putIntoDynamo(req, candidateType, callback) {
 dynamoDB.putItem({
-    TableName: "Interviewer",
+    TableName: "Candidate",
     Item: {
         linkedin_id: {S: req.user.id},
-        candidateType: {S: candidateType}
+        candidateType: {S: candidateType},
+        displayName: {S: req.user.displayName}
     }
 }, function(err, data) {
       logErrorAndData(err, data, "DynamoDB_Put_" + candidateType);
@@ -67,7 +68,7 @@ dynamoDB.putItem({
 
 function getFromDynamo(req, callback) {
 dynamoDB.getItem({
-    TableName: "Interviewer",
+    TableName: "Candidate",
     Key: {
         linkedin_id: {S: req.user.id}
     }
@@ -151,7 +152,18 @@ app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
   }
   else {
       request.user.candidateType = "interviewee";
-      response.render('intervieweeDashboard', {user: request.user});
+      dynamoDB.scan({
+          TableName: "Candidate",
+          ScanFilter: {
+              candidateType: {
+                  AttributeValueList: [{S: "interviewer"}],
+                  ComparisonOperator: "EQ"
+              }
+          }
+      }, function(err, data) {
+          response.render('intervieweeDashboard', {user: request.user,
+                                                   interviewers: data});
+      });
   }
 });
 
@@ -163,7 +175,7 @@ app.get('/interview', ensureAuthenticated, function(request, response) {
 
 app.post('/interviewer/:id', function(req, res) {
     dynamoDB.updateItem({
-          TableName: "Interviewer",
+          TableName: "Candidate",
           Key: {
               linkedin_id: {S: req.params.id}
           },

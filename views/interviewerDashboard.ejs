@@ -30,8 +30,8 @@
 		<div class="span3">
                     <div class="well sidebar-nav">
 			<ul class="nav nav-list">
+                            <li class="active"><a href="#">Settings<i class="icon-chevron-right"></i></a></li>
 		            <li><a href="#">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
-                            <li><a href="#">Preferences<i class="icon-chevron-right"></i></a></li>
                             <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
                         </ul>
 		    </div>
@@ -40,7 +40,10 @@
                     <form id="interviewerSettingsFormId" class="well">
                         <div id="linkedin_id" data-id="<%= user.id %>"></div>
                         <label>Interview Session Practice Price</label>
-                        <input name="price" type="text" class="span3" placeholder="Interview Session price (in $)">
+                        <div class="input-append">
+                            <input type="text" name="price" class="span3" maxlength="2">
+                            <span class="add-on">$/hr</span>
+                        </div>
                         <label>Programming Languages</label>
                         <textarea name="languages" class="input-xlarge" id="textarea" rows="3" placeholder="Programming Languages you are awesome at!"></textarea>
                         <label>Area of expertise</label>

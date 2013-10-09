@@ -10,11 +10,56 @@
                 <div class="span3">
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
+                            <li class="active"><a id="interviewers" href="#">Interviewers<i class="icon-chevron-right"></i></a></li>
                             <li><a href="#">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
-                            <li><a href="#">Preferences<i class="icon-chevron-right"></i></a></li>
                             <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
                         </ul>
                     </div>
+                </div>
+                <div class="span9">
+                    <div id="interviewerList">
+                        <ul class="thumbnails">
+                        <% interviewers.Items.forEach(function(interviewer) {%>
+                            <li class="span5 clearfix">
+                                <div class="thumbnail clearfix">
+<!--                                    <img src="http://placehold.it/320x200" alt="ALT NAME" class="pull-left span2 clearfix" style='margin-right:10px'> -->
+                                    <div class="caption" class="pull-left">
+                                        <a href="#myModal" class="btn btn-primary icon pull-right" data-toggle="modal">Schedule an Interview</a>
+                                        <h4>  
+                                        <%= interviewer.displayName.S %>
+                                        </h4>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <b>Price</b>
+                                            </div>
+                                            <div class="panel-body"><%= interviewer.price.S %>$/hr</div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <b>Area of Expertise</b>
+                                            </div>
+                                            <div class="panel-body"><%= interviewer.areaOfExpertise.S %></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                          <% });%>
+                        </ul>
+                    </div>
+                    <div class="modal hide" id="myModal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">x</button>
+    <h3>Schedule an Interview</h3>
+  </div>
+  <div class="modal-body">
+    <form method="post" action='' name="scheduleInterviewForm">
+      <p><input type="text" class="span3" name="eid" id="timing" placeholder="Timing Preferences"></p>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn btn-primary">Submit</a>
+  </div>
+</div>
                 </div>
             </div>
         </div>
