@@ -174,6 +174,7 @@ app.get('/interview', ensureAuthenticated, function(request, response) {
 });
 
 app.post('/interviewer/:id', function(req, res) {
+    // TODO: Validate inputs before persisting
     dynamoDB.updateItem({
           TableName: "Candidate",
           Key: {
@@ -202,6 +203,10 @@ app.post('/interviewer/:id', function(req, res) {
       });
 
     res.send('success');
+});
+
+app.post('/scheduleInterview', function(req, res) {
+    console.log("Schedule Interview" + req.params);
 });
 
 function logout(request) {
