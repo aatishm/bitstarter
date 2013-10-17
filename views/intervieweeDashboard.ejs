@@ -21,6 +21,7 @@
                     <div id="interviewerList">
                         <ul class="thumbnails">
                         <% interviewers.Items.forEach(function(interviewer) {%>
+                            <% if (!interviewer.price) { return; } %>
                             <li class="span5 clearfix">
                                 <div class="thumbnail clearfix">
 <!--                                    <img src="http://placehold.it/320x200" alt="ALT NAME" class="pull-left span2 clearfix" style='margin-right:10px'> -->
@@ -44,31 +45,31 @@
                                     </div>
                                 </div>
                             </li>
-                            <div class="modal hide" id="<%= interviewer.linkedin_id.S %>">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">x</button>
-                                    <h3>Schedule an Interview</h3>
-                                </div>
-                                <div class="modal-body">
-                                    <form method="post" action='' name="scheduleInterviewForm" class="well">
-                                        <div id="datetimepicker" class="input-append date">
-                                        <label>Date and Time (in PST)</label>
-                                        <input type="text" class="span12" placeholder="Preferred Date and Time (in PST)"></input>
-                                        <span class="add-on">
-                                            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                                        </span>
-                                        </div>
-                                        <label>Area you want to be interviewed</label>
-                                        <textarea name="interviewArea" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."></textarea>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="#" class="btn btn-primary">Submit</a>
-                                </div>
-                            </div>                            
                           <% });%>
                         </ul>
                     </div>
+	            <div class="modal hide" id="<%= interviewer.linkedin_id.S %>">
+		        <div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal">x</button>
+			    <h3>Schedule an Interview</h3>
+		        </div>
+                        <div class="modal-body">
+                            <form method="post" action='/scheduleInterview' name="scheduleInterviewForm" class="well">
+                                <div id="datetimepicker" class="input-append date">
+			            <label>Date and Time (in PST)</label>
+                                    <input type="text" class="span12" placeholder="Preferred Date and Time (in PST)"></input>
+                                    <span class="add-on">
+                                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                                    </span>
+                                </div>
+			        <label>Area you want to be interviewed</label>
+                                <textarea name="interviewArea" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."></textarea>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-primary">Submit</a>
+                        </div>
+                    </div> 
                 </div>
             </div>
         </div>
