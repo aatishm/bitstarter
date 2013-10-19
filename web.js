@@ -1,10 +1,16 @@
 // TODO: Node best practice is to include the node_modules directory in your source repository for faster deploys and dev/prod parity.
 // http://12factor.net/dev-prod-parity
+
+// TODO: If possible, rename linkedin_id attribute to linkedinId in DynamoDB table and code
 var express = require('express');
 var fs = require('fs');
 var passport = require('passport');
 var authentication = require('./authentication.js');
 var aws = require("./aws.js");
+var shortId = require('shortid');
+
+// Set seed for shortId
+shortId.seed(193523723);
 
 // Configure common middlewares. Precedence matters. Think of middleware as a stack of handlers that need to be executed one after another for every HTTP Request
 var app = express.createServer(
@@ -206,8 +212,21 @@ app.post('/interviewer/:id', function(req, res) {
 });
 
 app.post('/scheduleInterview', function(req, res) {
-    console.log("Schedule Interview" + req.body);
-    res.send('success');
+    // TODO: Validate your inputs
+    dynamoDB.putItem({
+        TableName: "Interview",
+        Item: {
+            interviewId: {S: shortId.generate()},
+            interviewerId: {S: req.body.interviewerId},
+            intervieweeId: {S: req.body.intervieweeId},
+            dateTime: {S: req.body.dateTime},
+            interviewArea: {S: req.body.interviewArea}
+        }
+    }, function(err, data) {
+         logErrorAndData(err, data, "DynamoDB_Put_ScheduleInterview");
+         res.send('success');
+       }
+    );
 });
 
 function logout(request) {
