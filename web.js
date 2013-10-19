@@ -206,7 +206,8 @@ app.post('/interviewer/:id', function(req, res) {
 });
 
 app.post('/scheduleInterview', function(req, res) {
-    console.log("Schedule Interview" + req.params);
+    console.log("Schedule Interview" + req.body);
+    res.send('success');
 });
 
 function logout(request) {

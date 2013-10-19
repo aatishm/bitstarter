@@ -3,6 +3,32 @@
     <head>
         <% include layout %>
         <link rel="stylesheet" type="text/css" media="screen" href="http://tarruda.github.com/bootstrap-datetimepicker/assets/css/bootstrap-datetimepicker.min.css">
+        <script type="text/javascript">
+            function triggerModal(interviewerId, intervieweeId) {
+                $("#scheduleInterviewModalBody input[name='interviewerId']").val(interviewerId);
+                $("#scheduleInterviewModalBody input[name='intervieweeId']").val(intervieweeId);
+                $('#scheduleInterviewModal').modal('show');
+                return false;
+            }
+
+            $(document).ready(function() {
+               $('#submitModal').click(function() {
+                   console.log("Serializing" + $("#scheduleInterviewForm").serialize());
+                   $.ajax({
+                        type: "POST",
+                        url: "/scheduleInterview",
+                        data: $("#scheduleInterviewForm").serialize(), // serializes the form's elements.
+                        success: function(data) {
+                            console.log("Success scheduling interview");
+                            $('#scheduleInterviewModal').modal('hide');
+                        }    
+                    });
+
+                   // prevent default event and stop event propagation
+                   return false;
+               }); 
+            });
+        </script>
     </head>
     <body>
         <% include navbar %>
@@ -26,7 +52,8 @@
                                 <div class="thumbnail clearfix">
 <!--                                    <img src="http://placehold.it/320x200" alt="ALT NAME" class="pull-left span2 clearfix" style='margin-right:10px'> -->
                                     <div class="caption" class="pull-left">
-                                        <a href="#<%= interviewer.linkedin_id.S %>" class="btn btn-primary icon pull-right" data-toggle="modal">Schedule an Interview</a>
+                                        <a href="#" class="btn btn-primary icon pull-right" data-toggle="modal" onclick="triggerModal(&quot;<%=interviewer.linkedin_id.S %>&quot;, &quot;<%= user.id%>&quot;)">
+                                        Schedule an Interview</a>
                                         <h4>  
                                         <%= interviewer.displayName.S %>
                                         </h4>
@@ -48,26 +75,28 @@
                           <% });%>
                         </ul>
                     </div>
-	            <div class="modal hide" id="<%= interviewer.linkedin_id.S %>">
+	            <div id="scheduleInterviewModal" class="modal hide">
 		        <div class="modal-header">
 		            <button type="button" class="close" data-dismiss="modal">x</button>
 			    <h3>Schedule an Interview</h3>
 		        </div>
-                        <div class="modal-body">
-                            <form method="post" action='/scheduleInterview' name="scheduleInterviewForm" class="well">
+                        <div id="scheduleInterviewModalBody" class="modal-body">
+                            <form id="scheduleInterviewForm" class="well">
+                                <input name="interviewerId" type="hidden"></input>
+                                <input name="intervieweeId" type="hidden"></input>
                                 <div id="datetimepicker" class="input-append date">
 			            <label>Date and Time (in PST)</label>
-                                    <input type="text" class="span12" placeholder="Preferred Date and Time (in PST)"></input>
+                                    <input name="dateTime" type="text" class="span12" placeholder="Preferred Date and Time (in PST)"></input>
                                     <span class="add-on">
                                         <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                                     </span>
                                 </div>
 			        <label>Area you want to be interviewed</label>
-                                <textarea name="interviewArea" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."></textarea>
+                                <textarea name="interviewArea" class="input-xlarge" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."></textarea>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <a href="#" class="btn btn-primary">Submit</a>
+                            <a id="submitModal" href="#" class="btn btn-primary">Submit</a>
                         </div>
                     </div> 
                 </div>
