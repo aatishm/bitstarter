@@ -63,7 +63,9 @@ dynamoDB.putItem({
     Item: {
         linkedin_id: {S: req.user.id},
         candidateType: {S: candidateType},
-        displayName: {S: req.user.displayName}
+        displayName: {S: req.user.displayName},
+        // TODO: Should we be persisting email id? Can the user change his emailId in Linkedin? If so, should we always make a call to Linkedin by profileId to get up-to-date info?
+        emailAddress: {S: req.user._json.emailAddress}
     }
 }, function(err, data) {
       logErrorAndData(err, data, "DynamoDB_Put_" + candidateType);
@@ -72,11 +74,11 @@ dynamoDB.putItem({
 );
 }
 
-function getFromDynamo(req, callback) {
+function getFromDynamo(params, callback) {
 dynamoDB.getItem({
     TableName: "Candidate",
     Key: {
-        linkedin_id: {S: req.user.id}
+        linkedin_id: {S: params.id}
     }
 }, function(err, data) {
       logErrorAndData(err, data, "DynamoDB_Get");
@@ -85,18 +87,18 @@ dynamoDB.getItem({
 );
 }
 
-function sendEmail(req) {
+function sendEmail(data, callback) {
 ses.sendEmail({
     Source: "Intervyouer <support@intervyouer.com>",
-    Destination: {ToAddresses: [req.user._json.emailAddress]},
+    Destination: {ToAddresses: data.toAddressList},
         Message: {
             Subject: {
-                Data: "Welcome to Intervyouer!",
+                Data: data.subjectData,
                 Charset: "UTF-8"
             },
             Body: {
-                Text: {
-                    Data: "Welcome! We're happy you joined us. Your login id is same as your Linkedin id: " + req.user._json.emailAddress,
+                Html: {
+                    Data: data.bodyData, 
                     Charset: "UTF-8"
                 }
             }
@@ -104,6 +106,7 @@ ses.sendEmail({
         ReturnPath: "support@intervyouer.com"
     }, function(err, data) {
             logErrorAndData(err, data, "SES");
+            callback(data);
        }
 );}
 
@@ -117,16 +120,23 @@ app.get('/auth/linkedin/callback',
       if (req.session.pageType === 'signUp') {
           var candidateType = req.session.candidateType === "interviewer" ? "interviewer" : "interviewee";
           // Create a entry into table
+          // TODO: If the user signs up again and again, all the previous info will be lost as putItem will override it. We should do a getItem and check if item
+          // exists, if so, updateItem else putItem
           putIntoDynamo(req, candidateType, function(data) {
               // Send email to the customer
-              sendEmail(req);
+              var emailData = {
+                  toAddressList: [req.user._json.emailAddress],
+                  subjectData: "Welcome to Intervyouer!",
+                  bodyData: "Welcome! We're happy you joined us. Your login id is same as your Linkedin id: " + req.user._json.emailAddress
+              };
+              sendEmail(emailData);
               // Redirect to dashboard
               candidateType === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
           });
       }
       else {
          // it is a login page. Retrieve item from dynamo db
-         getFromDynamo(req, function(data) {
+         getFromDynamo({id: req.user.id}, function(data) {
              if (data['Item'] != null) {
                  // Redirect to dashboard
                  data['Item'].candidateType.S === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
@@ -223,8 +233,19 @@ app.post('/scheduleInterview', function(req, res) {
             interviewArea: {S: req.body.interviewArea}
         }
     }, function(err, data) {
-         logErrorAndData(err, data, "DynamoDB_Put_ScheduleInterview");
-         res.send('success');
+           logErrorAndData(err, data, "DynamoDB_Put_ScheduleInterview");
+           // get interviewer's email id from db
+           getFromDynamo({id: req.body.interviewerId}, function(data) {
+               // Send email to the interviewer
+               var emailData = {
+                   toAddressList: [data['Item'].emailAddress.S],
+                   subjectData: "Interview Request",
+                   bodyData: "Hey " + data['Item'].displayName.S + ",<br/>You have a request for interview.<p>Please visit your <a href=\"http://www.intervyouer.com/dashboard/interviewer\">dashboard</a> to accept/decline the interview. </p><p>Thanks,<br/>Intervyouer Team</p>"
+               };
+               sendEmail(emailData, function(data) {
+                   res.send('success');
+               });
+           });
        }
     );
 });
