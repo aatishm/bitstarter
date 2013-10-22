@@ -188,7 +188,7 @@ app.get('/interview/:id', ensureAuthenticated, function(request, response) {
                                             userId: "Random_User"});
 });
 
-app.post('/interviewer/:id', function(req, res) {
+app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
     // TODO: Validate inputs before persisting
     dynamoDB.updateItem({
           TableName: "Candidate",
@@ -220,7 +220,7 @@ app.post('/interviewer/:id', function(req, res) {
     res.send('success');
 });
 
-app.post('/scheduleInterview', function(req, res) {
+app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
     // TODO: Validate your inputs
     dynamoDB.putItem({
         TableName: "Interview",
@@ -249,7 +249,7 @@ app.post('/scheduleInterview', function(req, res) {
     );
 });
 
-app.get('/upcomingInterviews', function(req, res) {
+app.get('/upcomingInterviews', ensureAuthenticated, function(req, res) {
     
 });
 
