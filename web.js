@@ -183,10 +183,8 @@ app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
   }
 });
 
-app.get('/interview', ensureAuthenticated, function(request, response) {
-    fs.readFile('collaborative_editor.html', function(err, data) {
-        response.send(data.toString());
-    });
+app.get('/interview/:id', ensureAuthenticated, function(request, response) {
+    response.render('collaborativeEditor', {interviewId: request.params.id});
 });
 
 app.post('/interviewer/:id', function(req, res) {
@@ -248,6 +246,10 @@ app.post('/scheduleInterview', function(req, res) {
            });
        }
     );
+});
+
+app.get('/upcomingInterviews', function(req, res) {
+    
 });
 
 function logout(request) {
