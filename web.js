@@ -76,7 +76,7 @@ dynamoDB.putItem({
 
 function getFromDynamo(params, callback) {
 dynamoDB.getItem({
-    TableName: "Candidate",
+    TableName: params.tableName,
     Key: {
         linkedin_id: {S: params.id}
     }
@@ -136,7 +136,7 @@ app.get('/auth/linkedin/callback',
       }
       else {
          // it is a login page. Retrieve item from dynamo db
-         getFromDynamo({id: req.user.id}, function(data) {
+         getFromDynamo({id: req.user.id, tableName: "Candidate"}, function(data) {
              if (data['Item'] != null) {
                  // Redirect to dashboard
                  data['Item'].candidateType.S === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
@@ -234,7 +234,7 @@ app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
     }, function(err, data) {
            logErrorAndData(err, data, "DynamoDB_Put_ScheduleInterview");
            // get interviewer's email id from db
-           getFromDynamo({id: req.body.interviewerId}, function(data) {
+           getFromDynamo({id: req.body.interviewerId, tableName: "Candidate"}, function(data) {
                // Send email to the interviewer
                var emailData = {
                    toAddressList: [data['Item'].emailAddress.S],
@@ -249,8 +249,10 @@ app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
     );
 });
 
-app.get('/upcomingInterviews', ensureAuthenticated, function(req, res) {
-    
+app.get('/upcomingInterviews/:id', ensureAuthenticated, function(req, res) {
+    getFromDynamo({id: req.params.id, tableName: "Interview"}, function(data) {
+        
+    });
 });
 
 function logout(request) {
