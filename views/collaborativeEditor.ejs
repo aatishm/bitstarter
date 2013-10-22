@@ -77,9 +77,8 @@
 			});
 		});
 
-    	var userId = Math.floor(Math.random() * 9999999999).toString();
-		
-		// Create Firepad.
+         var userId = '<%= userId %>';
+	// Create Firepad.
     	var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {userId: userId});
 		
     	// Create FirepadUserList (with our desired userId).
@@ -139,7 +138,6 @@
 		</div>
 		
 		<div id="userlist" class="userlist"></div>
-                <div><%= interviewId %></div>
 		
 		<div class="chat panel panel-primary">
 		  <div class="panel-heading">

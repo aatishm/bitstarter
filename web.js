@@ -184,7 +184,8 @@ app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
 });
 
 app.get('/interview/:id', ensureAuthenticated, function(request, response) {
-    response.render('collaborativeEditor', {interviewId: request.params.id});
+    response.render('collaborativeEditor', {interviewId: request.params.id,
+                                            userId: "Random_User"});
 });
 
 app.post('/interviewer/:id', function(req, res) {
