@@ -1,0 +1,54 @@
+<! DOCTYPE html>
+<html>
+    <head>
+        <% include layout %>
+         <!-- TODO: Push this into a separate file -->
+         <script type="text/javascript">
+         </script>
+    </head>
+    <body>
+        <% include navbar %>
+        <div class="container-fluid">
+            <div class="row-fluid">
+		<div class="span3">
+                    <div class="well sidebar-nav">
+			<ul class="nav nav-list">
+                            <li><a href="/dashboard/interviewer">Settings<i class="icon-chevron-right"></i></a></li>
+		            <li class="active"><a href="/dashboard/interviewer/upcomingInterviews/<%= interviewerId %>">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
+                            <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
+                        </ul>
+		    </div>
+		</div>
+                <div class="span9 well">
+                    <div id="interviewerList">
+                        <ul class="thumbnails">
+                        <% interviews.Items.forEach(function(interview) {%>
+                            <li class="span5 clearfix">
+                                <div class="thumbnail clearfix">
+                                    <div class="caption" class="pull-left">
+                                        <a href="/interview/<%= interview.interviewId.S %>/userId/<%= interview.interviewerId.S %>">Interview Editor</a>
+                                        <h4>  
+                                        <%= interview.intervieweeId.S %>
+                                        </h4>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <b>Date & Time</b>
+                                            </div>
+                                            <div class="panel-body"><%= interview.dateTime.S %> (in PST)</div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <b>Area(s) to focus upon</b>
+                                            </div>
+                                            <div class="panel-body"><%= interview.interviewArea.S %></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                          <% });%>
+                        </ul>                    
+                </div>
+	    </div>
+	</div>
+   </body>
+</html>

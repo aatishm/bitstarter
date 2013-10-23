@@ -183,9 +183,9 @@ app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
   }
 });
 
-app.get('/interview/:id', ensureAuthenticated, function(request, response) {
-    response.render('collaborativeEditor', {interviewId: request.params.id,
-                                            userId: "Random_User"});
+app.get('/interview/:interviewId/userId/:userId', ensureAuthenticated, function(request, response) {
+    response.render('collaborativeEditor', {interviewId: request.params.interviewId,
+                                            userId: request.params.userId});
 });
 
 app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
@@ -249,9 +249,17 @@ app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
     );
 });
 
-app.get('/upcomingInterviews/:id', ensureAuthenticated, function(req, res) {
-    getFromDynamo({id: req.params.id, tableName: "Interview"}, function(data) {
-        
+app.get('/dashboard/interviewer/upcomingInterviews/:id', ensureAuthenticated, function(req, res) {
+    dynamoDB.scan({
+        TableName: "Interview",
+        ScanFilter: {
+            interviewerId: {
+                AttributeValueList: [{S: req.params.id}],
+                ComparisonOperator: "EQ"
+            }
+        }
+    }, function(err, data) {
+        res.render('interviewerUpcomingInterviews', {interviews: data, interviewerId: req.params.id, user: req.user});
     });
 });
 
