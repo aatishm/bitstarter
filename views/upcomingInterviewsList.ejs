@@ -1,0 +1,32 @@
+<!-- TODO: Formatting and refactor the code-->
+                <div class="span9 well">
+                    <div id="interviewerList">
+                        <ul class="thumbnails">
+                        <% interviews.Items.forEach(function(interview) {%>
+                            <li class="span5 clearfix">
+                                <div class="thumbnail clearfix">
+                                    <div class="caption" class="pull-left">
+                                        <a href="/interview/<%= interview.interviewId.S %>/userId/<% if (type === "interviewer") {%><%= interview.interviewerId.S %><%} else {%><%= interview.intervieweeId.S %><%}%>">Interview Editor</a>
+                                        <h4>  
+                                        <%= interview.intervieweeId.S %>
+                                        </h4>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <b>Date & Time</b>
+                                            </div>
+                                            <div class="panel-body"><%= interview.dateTime.S %> (in PST)</div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <b>Area(s) to focus upon</b>
+                                            </div>
+                                            <div class="panel-body"><%= interview.interviewArea.S %></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                          <% });%>
+                        </ul>
+                </div>
+            </div>
+

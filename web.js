@@ -259,7 +259,23 @@ app.get('/dashboard/interviewer/upcomingInterviews/:id', ensureAuthenticated, fu
             }
         }
     }, function(err, data) {
-        res.render('interviewerUpcomingInterviews', {interviews: data, interviewerId: req.params.id, user: req.user});
+        // TODO: user should have all the profile info. Remove 'type' property
+        res.render('interviewerUpcomingInterviews', {interviews: data, interviewerId: req.params.id, user: req.user, type: "interviewer"});
+    });
+});
+
+app.get('/dashboard/interviewee/upcomingInterviews/:id', ensureAuthenticated, function(req, res) {
+    dynamoDB.scan({
+        TableName: "Interview",
+        ScanFilter: {
+            intervieweeId: {
+                AttributeValueList: [{S: req.params.id}],
+                ComparisonOperator: "EQ"
+            }
+        }
+    }, function(err, data) {
+        // TODO: user should have all the profile info. Remove 'type' property
+        res.render('intervieweeUpcomingInterviews', {interviews: data, intervieweeId: req.params.id, user: req.user, type: "interviewee"});
     });
 });
 
