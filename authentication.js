@@ -1,6 +1,6 @@
 var LinkedInStrategy = require('passport-linkedin').Strategy;
 
-exports.configurePassport = function(passport) {
+exports.configurePassport = function(passport, dynamoDB) {
 
     passport.use(new LinkedInStrategy({
         //requestTokenURL: "https://api.linkedin.com/uas/oauth/requestToken",
@@ -23,11 +23,18 @@ exports.configurePassport = function(passport) {
     ));
 
     passport.serializeUser(function(user, done) {
-       // TODO: Add custom serialization/deserialization logic here
-       done(null, user);
+        done(null, user.id);
     });
 
-    passport.deserializeUser(function(obj, done) {
-        done(null, obj);
+    passport.deserializeUser(function(id, done) {
+        dynamoDB.getItem({
+            TableName: 'Candidate',
+            Key: {
+                linkedin_id: {S: id}
+            }
+        }, function(err, data) {
+                done(null, data['Item']);
+            }
+        );
     });
 }

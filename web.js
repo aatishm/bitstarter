@@ -31,16 +31,16 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.set('view options', {layout: false});
 
-app.get('/', function(request, response) {
-  response.render('index', {user: request.user});
+app.get('/', function(req, res) {
+  res.render('index', {user: req.user});
 });
-
-// Configure Passport
-authentication.configurePassport(passport);
 
 // Fetch AWS SES object
 var ses = aws.ses(); 
 var dynamoDB = aws.dynamoDB();
+
+// Configure Passport
+authentication.configurePassport(passport, dynamoDB);
 
 app.get('/login', passport.authenticate('linkedin'));
 
@@ -106,7 +106,9 @@ ses.sendEmail({
         ReturnPath: "support@intervyouer.com"
     }, function(err, data) {
             logErrorAndData(err, data, "SES");
-            callback(data);
+            if (callback) {
+                callback(data);
+            }
        }
 );}
 
@@ -161,13 +163,11 @@ function logErrorAndData(err, data, moduleName) {
     }
 }
 
-app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
-  if (request.params.type === "interviewer") {
-      request.user.candidateType = "interviewer";
-      response.render('interviewerDashboard', {user: request.user});
+app.get('/dashboard/:type', ensureAuthenticated, function(req, res) {
+  if (req.params.type === "interviewer") {
+      res.render('interviewerDashboard', {user: req.user});
   }
   else {
-      request.user.candidateType = "interviewee";
       dynamoDB.scan({
           TableName: "Candidate",
           ScanFilter: {
@@ -177,15 +177,15 @@ app.get('/dashboard/:type', ensureAuthenticated, function(request, response) {
               }
           }
       }, function(err, data) {
-          response.render('intervieweeDashboard', {user: request.user,
+          res.render('intervieweeDashboard', {user: req.user,
                                                    interviewers: data});
       });
   }
 });
 
-app.get('/interview/:interviewId/userId/:userId', ensureAuthenticated, function(request, response) {
-    response.render('collaborativeEditor', {interviewId: request.params.interviewId,
-                                            userId: request.params.userId});
+app.get('/interview/:interviewId/userId/:userId', ensureAuthenticated, function(req, res) {
+    res.render('collaborativeEditor', {interviewId: req.params.interviewId,
+                                            userId: req.params.userId});
 });
 
 app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
@@ -215,9 +215,12 @@ app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
           }
       }, function(err, data) {
           logErrorAndData(err, data, "DynamoDB_Update");
+          if (err) {
+              res.send(500, { error: 'Something blew up!' });
+          } else {
+              res.send('success');
+          }
       });
-
-    res.send('success');
 });
 
 app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
@@ -260,7 +263,7 @@ app.get('/dashboard/interviewer/upcomingInterviews/:id', ensureAuthenticated, fu
         }
     }, function(err, data) {
         // TODO: user should have all the profile info. Remove 'type' property
-        res.render('interviewerUpcomingInterviews', {interviews: data, interviewerId: req.params.id, user: req.user, type: "interviewer"});
+        res.render('interviewerUpcomingInterviews', {interviews: data, interviewerId: req.params.id, user: req.user});
     });
 });
 
@@ -275,19 +278,19 @@ app.get('/dashboard/interviewee/upcomingInterviews/:id', ensureAuthenticated, fu
         }
     }, function(err, data) {
         // TODO: user should have all the profile info. Remove 'type' property
-        res.render('intervieweeUpcomingInterviews', {interviews: data, intervieweeId: req.params.id, user: req.user, type: "interviewee"});
+        res.render('intervieweeUpcomingInterviews', {interviews: data, intervieweeId: req.params.id, user: req.user});
     });
 });
 
-function logout(request) {
-    request.user = false;
-    request.logout();
-    request.session.destroy();
+function logout(req) {
+    req.user = false;
+    req.logout();
+    req.session.destroy();
 }
 
-app.get('/logout', function(request, response) {
-    logout(request);
-    response.redirect('/');
+app.get('/logout', function(req, res) {
+    logout(req);
+    res.redirect('/');
 });
 
 //  Simple route middleware to ensure user is authenticated.

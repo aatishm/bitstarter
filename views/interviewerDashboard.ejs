@@ -8,14 +8,17 @@
                 $("#interviewerSettingsId").click(function() {
                     // clear message
                     $('#successLabel').hide(); 
+                    $('#errorLabel').hide();
                     $.ajax({
                         type: "POST",
 		        url: "/interviewer/" + $('#linkedin_id').attr('data-id'),
 	                data: $("#interviewerSettingsFormId").serialize(), // serializes the form's elements.
                         success: function(data) {
-                            console.log("Success");
                             $('#successLabel').show();
-                        }    
+                        },
+                        error: function(data) {
+                            $('#errorLabel').show();
+                        }
                     });
                     // don't let the event bubble
                     return false;
@@ -31,14 +34,14 @@
                     <div class="well sidebar-nav">
 			<ul class="nav nav-list">
                             <li class="active"><a href="/dashboard/interviewer">Settings<i class="icon-chevron-right"></i></a></li>
-		            <li><a href="/dashboard/interviewer/upcomingInterviews/<%= user.id %>">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
+		            <li><a href="/dashboard/interviewer/upcomingInterviews/<%= user.linkedin_id.S %>">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
                             <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
                         </ul>
 		    </div>
 		</div>
                 <div class="span9">
                     <form id="interviewerSettingsFormId" class="well">
-                        <div id="linkedin_id" data-id="<%= user.id %>"></div>
+                        <div id="linkedin_id" data-id="<%= user.linkedin_id.S %>"></div>
                         <label>Interview Session Practice Price</label>
                         <div class="input-append">
                             <input type="text" name="price" class="span3" maxlength="2">
@@ -53,6 +56,7 @@
                         <br>
                         <button id="interviewerSettingsId" type="submit" class="btn btn-primary">Submit</button>
                         <span id="successLabel" class="label label-success" style="display:none">Your changes have been submitted!</span>
+                        <span id="errorLabel" class="label label-error" style="display:none">Something went wrong. Sorry!</span>
                     </form>
                 </div>
 	    </div>

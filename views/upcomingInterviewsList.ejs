@@ -6,7 +6,7 @@
                             <li class="span5 clearfix">
                                 <div class="thumbnail clearfix">
                                     <div class="caption" class="pull-left">
-                                        <a href="/interview/<%= interview.interviewId.S %>/userId/<% if (type === "interviewer") {%><%= interview.interviewerId.S %><%} else {%><%= interview.intervieweeId.S %><%}%>">Interview Editor</a>
+                                        <a href="/interview/<%= interview.interviewId.S %>/userId/<% if (user.candidateType.S === "interviewer") {%><%= interview.interviewerId.S %><%} else {%><%= interview.intervieweeId.S %><%}%>">Interview Editor</a>
                                         <h4>  
                                         <%= interview.intervieweeId.S %>
                                         </h4>

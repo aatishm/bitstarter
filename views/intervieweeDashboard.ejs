@@ -39,7 +39,7 @@
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
                             <li class="active"><a id="interviewers" href="/dashboard/interviewee">Interviewers<i class="icon-chevron-right"></i></a></li>
-                            <li><a href="/dashboard/interviewee/upcomingInterviews/<%= user.id %>">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
+                            <li><a href="/dashboard/interviewee/upcomingInterviews/<%= user.linkedin_id.S %>">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
                             <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
                         </ul>
                     </div>
@@ -54,7 +54,7 @@
                                 <div class="thumbnail clearfix">
 <!--                                    <img src="http://placehold.it/320x200" alt="ALT NAME" class="pull-left span2 clearfix" style='margin-right:10px'> -->
                                     <div class="caption" class="pull-left">
-                                        <a href="#" class="btn btn-primary icon pull-right" data-toggle="modal" onclick="triggerModal(&quot;<%=interviewer.linkedin_id.S %>&quot;, &quot;<%= user.id%>&quot;)">
+                                        <a href="#" class="btn btn-primary icon pull-right" data-toggle="modal" onclick="triggerModal(&quot;<%=interviewer.linkedin_id.S %>&quot;, &quot;<%= user.linkedin_id.S%>&quot;)">
                                         Schedule an Interview</a>
                                         <h4>  
                                         <%= interviewer.displayName.S %>
