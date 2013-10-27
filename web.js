@@ -252,33 +252,33 @@ app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
     );
 });
 
-app.get('/dashboard/interviewer/upcomingInterviews/:id', ensureAuthenticated, function(req, res) {
+app.get('/dashboard/interviewer/upcomingInterviews/', ensureAuthenticated, function(req, res) {
     dynamoDB.scan({
         TableName: "Interview",
         ScanFilter: {
             interviewerId: {
-                AttributeValueList: [{S: req.params.id}],
+                AttributeValueList: [{S: req.user.linkedin_id.S}],
                 ComparisonOperator: "EQ"
             }
         }
     }, function(err, data) {
         // TODO: user should have all the profile info. Remove 'type' property
-        res.render('interviewerUpcomingInterviews', {interviews: data, interviewerId: req.params.id, user: req.user});
+        res.render('interviewerUpcomingInterviews', {interviews: data, user: req.user});
     });
 });
 
-app.get('/dashboard/interviewee/upcomingInterviews/:id', ensureAuthenticated, function(req, res) {
+app.get('/dashboard/interviewee/upcomingInterviews/', ensureAuthenticated, function(req, res) {
     dynamoDB.scan({
         TableName: "Interview",
         ScanFilter: {
             intervieweeId: {
-                AttributeValueList: [{S: req.params.id}],
+                AttributeValueList: [{S: req.user.linkedin_id.S}],
                 ComparisonOperator: "EQ"
             }
         }
     }, function(err, data) {
         // TODO: user should have all the profile info. Remove 'type' property
-        res.render('intervieweeUpcomingInterviews', {interviews: data, intervieweeId: req.params.id, user: req.user});
+        res.render('intervieweeUpcomingInterviews', {interviews: data, user: req.user});
     });
 });
 
