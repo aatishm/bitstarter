@@ -8,6 +8,7 @@ var passport = require('passport');
 var authentication = require('./authentication.js');
 var aws = require("./aws.js");
 var shortId = require('shortid');
+var expressValidator = require('express-validator');
 
 // Set seed for shortId
 shortId.seed(193523723);
@@ -20,6 +21,7 @@ var app = express.createServer(
     express.static(__dirname + '/public'),
     express.cookieParser(),
     express.bodyParser(),
+    expressValidator(),
     express.session({secret: "keyboard cat"}),
     passport.initialize(),
 //  See Sessions section on http://passportjs.org/guide/configure/
@@ -42,6 +44,11 @@ var dynamoDB = aws.dynamoDB();
 // Configure Passport
 authentication.configurePassport(passport, dynamoDB);
 
+/**
+Meat of OAuth 1.0A
+https://github.com/jaredhanson/passport-oauth1/blob/master/lib/strategy.js#L118
+Client using the above: https://github.com/jaredhanson/passport-linkedin/blob/master/lib/passport-linkedin/strategy.js
+**/
 app.get('/login', passport.authenticate('linkedin'));
 
 // TODO: I am not sure what is wrong but on Chrome, when I click on 'Join Now', even after process restarts, it is not asking me for linkedin credentials
@@ -189,7 +196,19 @@ app.get('/interview/:interviewId/userId/:userId', ensureAuthenticated, function(
 });
 
 app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
-    // TODO: Validate inputs before persisting
+    req.checkBody('price', 'Price has to be greater than 0').notEmpty().min(0);
+    req.checkBody('languages', 'Languages cannot be blank').notEmpty();
+    req.checkBody('areaOfExpertise', 'Area of Expertise cannot be blank').notEmpty();
+    req.checkBody('description', 'Description cannot be blank').notEmpty();
+    
+    var mappedErrors = req.validationErrors(true);
+    if (mappedErrors) {
+        // return a 400 and bail out
+        // TODO: The client is not getting the object with error field in jquery#error callback
+        res.send({error: mappedErrors}, 400);
+        return;
+    }
+
     dynamoDB.updateItem({
           TableName: "Candidate",
           Key: {
@@ -224,7 +243,20 @@ app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
 });
 
 app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
-    // TODO: Validate your inputs
+    // See: https://github.com/ctavan/express-validator
+    // https://github.com/chriso/node-validator
+    req.checkBody('interviewerId', 'Interviewer ID cannot be empty').notEmpty();
+    req.checkBody('intervieweeId', 'Interviewee ID cannot be empty').notEmpty();
+    req.checkBody('interviewArea', 'InterviewArea cannot be blank').notEmpty();
+    req.checkBody('dateTime', 'DateTime is not correct').isDate();
+
+    var mappedErrors = req.validationErrors(true);
+    if (mappedErrors) {
+        // return a 400 and bail out
+        res.send({error: mappedErrors}, 400);
+        return;
+    }
+
     dynamoDB.putItem({
         TableName: "Interview",
         Item: {

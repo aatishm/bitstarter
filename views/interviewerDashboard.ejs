@@ -13,10 +13,12 @@
                         type: "POST",
 		        url: "/interviewer/" + $('#linkedin_id').attr('data-id'),
 	                data: $("#interviewerSettingsFormId").serialize(), // serializes the form's elements.
-                        success: function(data) {
+                        success: function() {
                             $('#successLabel').show();
                         },
-                        error: function(data) {
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus);
+                            console.log(errorThrown);
                             $('#errorLabel').show();
                         }
                     });
