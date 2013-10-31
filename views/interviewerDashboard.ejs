@@ -11,7 +11,7 @@
                     $('#errorLabel').hide();
                     $.ajax({
                         type: "POST",
-		        url: "/interviewer/" + $('#linkedin_id').attr('data-id'),
+		        url: "/interviewer/",
 	                data: $("#interviewerSettingsFormId").serialize(), // serializes the form's elements.
                         success: function() {
                             $('#successLabel').show();
@@ -43,7 +43,6 @@
 		</div>
                 <div class="span9">
                     <form id="interviewerSettingsFormId" class="well">
-                        <div id="linkedin_id" data-id="<%= user.linkedin_id.S %>"></div>
                         <label>Interview Session Practice Price</label>
                         <div class="input-append">
                             <input type="text" name="price" class="span3" maxlength="2">

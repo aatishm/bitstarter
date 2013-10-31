@@ -9,6 +9,7 @@ var authentication = require('./authentication.js');
 var aws = require("./aws.js");
 var shortId = require('shortid');
 var expressValidator = require('express-validator');
+var uuid = require('node-uuid');
 
 // Set seed for shortId
 shortId.seed(193523723);
@@ -17,12 +18,14 @@ shortId.seed(193523723);
 var app = express.createServer(
     express.logger(),
     // Use app.use('/static', middleware) so that express.static is not called on every request. See SO below:
-    // http://stackoverflow.com/questions/12695591/node-js-express-js-how-does-app-router-work
+    // 1) http://stackoverflow.com/questions/12695591/node-js-express-js-how-does-app-router-work
+    // 2) http://www.senchalabs.org/connect/session.html#session
     express.static(__dirname + '/public'),
     express.cookieParser(),
     express.bodyParser(),
     expressValidator(),
-    express.session({secret: "keyboard cat"}),
+    // KB: http://stackoverflow.com/questions/5522020/how-do-sessions-work-in-express-with-nodejs
+    express.session({secret: uuid.v1()}),
     passport.initialize(),
 //  See Sessions section on http://passportjs.org/guide/configure/
     passport.session()
@@ -190,12 +193,12 @@ app.get('/dashboard/:type', ensureAuthenticated, function(req, res) {
   }
 });
 
-app.get('/interview/:interviewId/userId/:userId', ensureAuthenticated, function(req, res) {
+app.get('/interview/:interviewId', ensureAuthenticated, function(req, res) {
     res.render('collaborativeEditor', {interviewId: req.params.interviewId,
-                                            userId: req.params.userId});
+                                            userId: req.user.linkedin_id.S});
 });
 
-app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
+app.post('/interviewer', ensureAuthenticated, function(req, res) {
     req.checkBody('price', 'Price has to be greater than 0').notEmpty().min(0);
     req.checkBody('languages', 'Languages cannot be blank').notEmpty();
     req.checkBody('areaOfExpertise', 'Area of Expertise cannot be blank').notEmpty();
@@ -212,7 +215,7 @@ app.post('/interviewer/:id', ensureAuthenticated, function(req, res) {
     dynamoDB.updateItem({
           TableName: "Candidate",
           Key: {
-              linkedin_id: {S: req.params.id}
+              linkedin_id: {S: req.user.linkedin_id.S}
           },
           AttributeUpdates: {
               price: {
@@ -312,6 +315,19 @@ app.get('/dashboard/interviewee/upcomingInterviews/', ensureAuthenticated, funct
         // TODO: user should have all the profile info. Remove 'type' property
         res.render('intervieweeUpcomingInterviews', {interviews: data, user: req.user});
     });
+});
+
+/**
+* Note: i was just worried if my app is secure. I know it is not https atm but it will be soon. But more importantly, can a requester ask for some other interviewer/interviewee data?
+* And will this app reveal somebody else's data? The ans is NO. Rationale is as follows:
+* 1) If you read how sessions work (generally) and in express app, a session id is created in your MemoryStore (which is default) unless you provide a persistent store like redis/mongodb
+* 2) This session id + signature of session id (hash) is stored in a cookie under the name "connect.sid" (default unless you override it)
+* 3) Hence for every request, the session id is looked up from the cookie sent by the browser, session id is taken (and signature is verified to prevent tampering scenarios) and get all the session data that passport or some piece of code has stored.
+* In this way, only authenticated users can see only their data and not somebody else's. For some reason, if the API has interviewerId/intervieweeId, the app should validate that it is indeed the same user who is asking the info OR just remove those ids from the API.
+**/
+app.get('/dashboard/pastInterviews/', ensureAuthenticated, function(req, res) {
+
+
 });
 
 function logout(req) {
