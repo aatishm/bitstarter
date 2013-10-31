@@ -259,18 +259,26 @@ app.post('/scheduleInterview', ensureAuthenticated, function(req, res) {
         res.send({error: mappedErrors}, 400);
         return;
     }
-
+   
+    // TODO: Better way to solve TZ issues 
+    // Add PDT Timezone to the string dateTime
+    var dateTimeStr = req.body.dateTime + ' PDT';
+    // Store number of milliseconds since 1 January, 1970 UTC in DynamoDB
+    var dateTimeInMs = new Date(dateTimeStr).getTime();
+    
+    console.log(dateTimeStr + "\n" + dateTimeInMs + "\n" + String(dateTimeInMs));
     dynamoDB.putItem({
         TableName: "Interview",
         Item: {
             interviewId: {S: shortId.generate()},
             interviewerId: {S: req.body.interviewerId},
             intervieweeId: {S: req.body.intervieweeId},
-            dateTime: {S: req.body.dateTime},
+            dateTime: {N: String(dateTimeInMs)},
             interviewArea: {S: req.body.interviewArea}
         }
     }, function(err, data) {
            logErrorAndData(err, data, "DynamoDB_Put_ScheduleInterview");
+           if (err) {res.send(500); return;}
            // get interviewer's email id from db
            getFromDynamo({id: req.body.interviewerId, tableName: "Candidate"}, function(data) {
                // Send email to the interviewer

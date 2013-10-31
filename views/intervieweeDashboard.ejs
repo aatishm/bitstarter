@@ -88,7 +88,7 @@
                                 <input name="intervieweeId" type="hidden"></input>
                                 <div id="datetimepicker" class="input-append date">
 			            <label>Date and Time (in PST)</label>
-                                    <input name="dateTime" type="text" class="span12" placeholder="Preferred Date and Time (in PST)"></input>
+                                    <input name="dateTime" type="text" class="span12" placeholder="Preferred Date and Time"></input>
                                     <span class="add-on">
                                         <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                                     </span>
@@ -109,7 +109,11 @@
     </script>
     <script type="text/javascript">
       $('#datetimepicker').datetimepicker({
-        format: 'MM/dd/yyyy hh:mm'
+        format: 'MM/dd/yyyy hh:mm',
+        maskInput: true,
+        pickSeconds: false,
+        // TODO: This is not working
+        startDate: '-1d'
       });
     </script>
     </body>

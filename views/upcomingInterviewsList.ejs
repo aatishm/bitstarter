@@ -14,7 +14,8 @@
                                             <div class="panel-heading">
                                                 <b>Date & Time</b>
                                             </div>
-                                            <div class="panel-body"><%= interview.dateTime.S %> (in PST)</div>
+                                            <!-- TODO: This is a bug. Date is formatted as UTC and not as PST/PDT -->
+                                            <div class="panel-body"><% var date = new Date(Number(interview.dateTime.N));%><%= date.toString() %></div>
                                         </div>
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
