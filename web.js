@@ -305,7 +305,6 @@ app.get('/dashboard/interviewer/upcomingInterviews/', ensureAuthenticated, funct
             }
         }
     }, function(err, data) {
-        // TODO: user should have all the profile info. Remove 'type' property
         res.render('interviewerUpcomingInterviews', {interviews: data, user: req.user});
     });
 });
@@ -320,7 +319,6 @@ app.get('/dashboard/interviewee/upcomingInterviews/', ensureAuthenticated, funct
             }
         }
     }, function(err, data) {
-        // TODO: user should have all the profile info. Remove 'type' property
         res.render('intervieweeUpcomingInterviews', {interviews: data, user: req.user});
     });
 });
@@ -333,9 +331,24 @@ app.get('/dashboard/interviewee/upcomingInterviews/', ensureAuthenticated, funct
 * 3) Hence for every request, the session id is looked up from the cookie sent by the browser, session id is taken (and signature is verified to prevent tampering scenarios) and get all the session data that passport or some piece of code has stored.
 * In this way, only authenticated users can see only their data and not somebody else's. For some reason, if the API has interviewerId/intervieweeId, the app should validate that it is indeed the same user who is asking the info OR just remove those ids from the API.
 **/
-app.get('/dashboard/pastInterviews/', ensureAuthenticated, function(req, res) {
-
-
+app.get('/dashboard/interviewee/pastInterviews', ensureAuthenticated, function(req, res) {
+    dynamoDB.scan({
+        TableName: "Interview",
+        ScanFilter: {
+            intervieweeId: {
+                AttributeValueList: [{S: req.user.linkedin_id.S}],
+                ComparisonOperator: "EQ"
+            },
+            dateTime: {
+                AttributeValueList: [{N: String(Date.now())}],
+                ComparisonOperator: "LE"
+            }            
+        }
+    }, function(err, data) {
+        console.log("hEY");
+        res.render('intervieweePastInterviews', {interviews: data, user: req.user});
+    });
+    console.log("End past");
 });
 
 function logout(req) {
@@ -355,8 +368,32 @@ app.get('/logout', function(req, res) {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
+  if (req.isAuthenticated()) {
+     if (grantApiAccess(req, res, next)) {
+         return next();
+     } else {
+         res.send(401);
+         return;
+     }
+  }
   res.redirect('/login/');
+}
+
+var interviewerUrls = ['/dashboard/interviewer', '/interviewer', '/interview'];
+var intervieweeUrls = ['/dashboard/interviewee', '/interview', '/scheduleInterview'];
+
+function grantApiAccess(req, res, next) {
+    function _grantApi(element) {
+        return req.url.slice(0, element.length) === element;
+    }
+
+    var candidateType = req.user.candidateType.S;
+    if (candidateType === "interviewer") {
+        return interviewerUrls.some(_grantApi);
+    } else if (candidateType === "interviewee") {
+        return intervieweeUrls.some(_grantApi);
+    }
+    return false;
 }
 
 var port = process.env.PORT || 8080;

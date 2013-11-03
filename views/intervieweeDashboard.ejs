@@ -12,6 +12,7 @@
             }
 
             $(document).ready(function() {
+               $('#interviewers').addClass('active');
                $('#submitModal').click(function() {
                     // clear message
                     $('#successLabel').hide(); 
@@ -37,11 +38,7 @@
             <div class="row-fluid">
                 <div class="span3">
                     <div class="well sidebar-nav">
-                        <ul class="nav nav-list">
-                            <li class="active"><a id="interviewers" href="/dashboard/interviewee">Interviewers<i class="icon-chevron-right"></i></a></li>
-                            <li><a href="/dashboard/interviewee/upcomingInterviews/">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
-                            <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
-                        </ul>
+                        <% include intervieweeSidebar %>
                     </div>
                 </div>
                 <div class="span9">

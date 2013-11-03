@@ -15,20 +15,7 @@
                                             <%= interview.interviewerId.S %>
                                         <% } %>
                                         </h4>
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <b>Date & Time</b>
-                                            </div>
-                                            <!-- TODO: This is a bug. Date is formatted as UTC and not as PST/PDT -->
-                                            <div class="panel-body"><% var date = new Date(Number(interview.dateTime.N));%><%= date.toString() %></div>
-                                        </div>
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <b>Area(s) to focus upon</b>
-                                            </div>
-                                            <div class="panel-body"><%= interview.interviewArea.S %></div>
-                                        </div>
-                                    </div>
+                                   </div>
                                 </div>
                             </li>
                           <% });%>
