@@ -302,6 +302,10 @@ app.get('/dashboard/interviewer/upcomingInterviews/', ensureAuthenticated, funct
             interviewerId: {
                 AttributeValueList: [{S: req.user.linkedin_id.S}],
                 ComparisonOperator: "EQ"
+            },
+            dateTime: {
+                AttributeValueList: [{N: String(Date.now())}],
+                ComparisonOperator: "GE"
             }
         }
     }, function(err, data) {
@@ -316,6 +320,10 @@ app.get('/dashboard/interviewee/upcomingInterviews/', ensureAuthenticated, funct
             intervieweeId: {
                 AttributeValueList: [{S: req.user.linkedin_id.S}],
                 ComparisonOperator: "EQ"
+            },
+            dateTime: {
+                AttributeValueList: [{N: String(Date.now())}],
+                ComparisonOperator: "GE"
             }
         }
     }, function(err, data) {
@@ -341,14 +349,12 @@ app.get('/dashboard/interviewee/pastInterviews', ensureAuthenticated, function(r
             },
             dateTime: {
                 AttributeValueList: [{N: String(Date.now())}],
-                ComparisonOperator: "LE"
+                ComparisonOperator: "LT"
             }            
         }
     }, function(err, data) {
-        console.log("hEY");
         res.render('intervieweePastInterviews', {interviews: data, user: req.user});
     });
-    console.log("End past");
 });
 
 function logout(req) {

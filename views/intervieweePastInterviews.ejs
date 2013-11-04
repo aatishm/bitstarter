@@ -7,6 +7,33 @@
                 $('#pastInterviews').addClass('active');
             });
         </script>
+        <script type="text/javascript">(function(d, t, e, m){
+	// Async Rating-Widget initialization.
+        window.RW_Async_Init = function(){
+            RW.init({
+                huid: "136790",
+                uid: "afad7254bfd4f48a067b7b30e6e293b5",
+                options: {
+                    "size": "medium",
+                    "style": "oxygen"
+                },
+                source: "website" 
+            });
+            RW.render();
+        };
+
+        // Append Rating-Widget JavaScript library.
+        var rw, s = d.getElementsByTagName(e)[0], id = "rw-js",
+            p = d.location.protocol, a = ("https:" == p ? "secure." + 
+            m + "js/" : "js." + m), ck = "Y" + t.getFullYear() + "M" + 
+            t.getMonth() + "D" + t.getDate();
+        if (d.getElementById(id)) return;              
+        rw = d.createElement(e);
+        rw.id = id; rw.async = true; rw.type = "text/javascript";
+        rw.src = p + "//" + a + "external.min.js?ck=" + ck;
+        s.parentNode.insertBefore(rw, s);
+    }(document, new Date(), "script", "rating-widget.com/"));
+    </script>
     </head>
     <body>
         <% include navbar %>

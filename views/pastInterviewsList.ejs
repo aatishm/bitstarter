@@ -1,4 +1,16 @@
 <!-- TODO: Formatting and refactor the code-->
+<%
+            var hashCode = function (str) {
+                var length = str.length;
+                var result = 0;
+                if (!str || str.length === 0) { return result; }
+                
+                for (var i = 0; i < str.length; i++) {
+                    result = result + str.charCodeAt(i) * Math.pow(31, length-1-i);
+                }
+                return result;
+            };
+%>
                 <div class="span9 well">
                     <div id="interviewerList">
                         <ul class="thumbnails">
@@ -14,8 +26,9 @@
                                         <% } else { %>
                                             <%= interview.interviewerId.S %>
                                         <% } %>
-                                        </h4>
+                                        </h4>  
                                    </div>
+                                   <div class="rw-ui-container rw-urid-<%= hashCode(interview.interviewId.S) %>"></div>
                                 </div>
                             </li>
                           <% });%>
