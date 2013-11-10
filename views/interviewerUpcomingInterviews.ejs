@@ -4,6 +4,9 @@
         <% include layout %>
          <!-- TODO: Push this into a separate file -->
          <script type="text/javascript">
+            $(document).ready(function() {
+                $('#upcomingInterviews').addClass('active');
+            });
          </script>
     </head>
     <body>
@@ -12,11 +15,7 @@
             <div class="row-fluid">
 		<div class="span3">
                     <div class="well sidebar-nav">
-			<ul class="nav nav-list">
-                            <li><a href="/dashboard/interviewer">Settings<i class="icon-chevron-right"></i></a></li>
-		            <li class="active"><a href="/dashboard/interviewer/upcomingInterviews/">Upcoming Interviews<i class="icon-chevron-right"></i></a></li>
-                            <li><a href="#">Past Interviews<i class="icon-chevron-right"></i></a></li>
-                        </ul>
+                        <% include interviewerSidebar %>
 		    </div>
 		</div>
             <% include upcomingInterviewsList.ejs %>
