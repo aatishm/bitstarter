@@ -199,7 +199,7 @@ app.get('/interview/:interviewId', ensureAuthenticated, function(req, res) {
 });
 
 app.post('/interviewer', ensureAuthenticated, function(req, res) {
-    req.checkBody('price', 'Price has to be greater than 0').notEmpty().min(0);
+    req.checkBody('price', 'Price has to be greater than 0$').notEmpty().isNumeric().min(0);
     req.checkBody('languages', 'Languages cannot be blank').notEmpty();
     req.checkBody('areaOfExpertise', 'Area of Expertise cannot be blank').notEmpty();
     req.checkBody('description', 'Description cannot be blank').notEmpty();
