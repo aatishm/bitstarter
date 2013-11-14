@@ -43,7 +43,6 @@ app.use(passport.initialize());
 // See Sessions section on http://passportjs.org/guide/configure/
 app.use(passport.session());
 
-
 // configure views
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
