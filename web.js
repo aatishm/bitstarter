@@ -11,25 +11,37 @@ var shortId = require('shortid');
 var expressValidator = require('express-validator');
 var uuid = require('node-uuid');
 
+var app;
+// Created a self-signed certificate following this process: https://devcenter.heroku.com/articles/ssl-certificate-self
+// TODO: To get a SSL cert from a provider, follow: https://devcenter.heroku.com/articles/ssl-endpoint
+// TODO: Currently only local box is https since server key/crt is generated for it
+if (process.env.SERVER_KEY && process.env.SERVER_CRT) {
+    var privateKey = fs.readFileSync('/home/ubuntu/server.key').toString();
+    var certificate = fs.readFileSync('/home/ubuntu/server.crt').toString();
+    var httpsOptions = {key: privateKey, cert: certificate};
+    app = express.createServer(httpsOptions);
+}
+else {
+    app = express.createServer();
+}
+
 // Set seed for shortId
 shortId.seed(193523723);
 
 // Configure common middlewares. Precedence matters. Think of middleware as a stack of handlers that need to be executed one after another for every HTTP Request
-var app = express.createServer(
-    express.logger(),
-    // Use app.use('/static', middleware) so that express.static is not called on every request. See SO below:
-    // 1) http://stackoverflow.com/questions/12695591/node-js-express-js-how-does-app-router-work
-    // 2) http://www.senchalabs.org/connect/session.html#session
-    express.static(__dirname + '/public'),
-    express.cookieParser(),
-    express.bodyParser(),
-    expressValidator(),
-    // KB: http://stackoverflow.com/questions/5522020/how-do-sessions-work-in-express-with-nodejs
-    express.session({secret: uuid.v1()}),
-    passport.initialize(),
-//  See Sessions section on http://passportjs.org/guide/configure/
-    passport.session()
-);
+app.use(express.logger());
+// Use app.use('/static', middleware) so that express.static is not called on every request. See SO below:
+// 1) http://stackoverflow.com/questions/12695591/node-js-express-js-how-does-app-router-work
+// 2) http://www.senchalabs.org/connect/session.html#session
+app.use(express.static(__dirname + '/public'));
+app.use(express.cookieParser());
+app.use(express.bodyParser());
+app.use(expressValidator());
+// KB: http://stackoverflow.com/questions/5522020/how-do-sessions-work-in-express-with-nodejs
+app.use(express.session({secret: uuid.v1()}));
+app.use(passport.initialize());
+// See Sessions section on http://passportjs.org/guide/configure/
+app.use(passport.session());
 
 // configure views
 app.set('view engine', 'ejs');
