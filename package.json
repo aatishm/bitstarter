@@ -14,7 +14,8 @@
     "aws-sdk": "1.6.0",
     "shortid": "2.0.0",
     "express-validator": "0.8.x",
-    "node-uuid": "1.4.x"
+    "node-uuid": "1.4.x",
+    "oauth": "0.9.x"
   },
   "engines": {
     "node": "0.8.x",

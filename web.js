@@ -82,12 +82,19 @@ app.get('/signUp/:candidateType', function(req, res, next) {
 function putIntoDynamo(req, candidateType, callback) {
 dynamoDB.putItem({
     TableName: "Candidate",
+    Expected: {
+        linkedin_id: {
+            Exists: false
+        }
+    },
     Item: {
         linkedin_id: {S: req.user.id},
         candidateType: {S: candidateType},
         displayName: {S: req.user.displayName},
         // TODO: Should we be persisting email id? Can the user change his emailId in Linkedin? If so, should we always make a call to Linkedin by profileId to get up-to-date info?
-        emailAddress: {S: req.user._json.emailAddress}
+        emailAddress: {S: req.user._json.emailAddress},
+        token: {S: req.user.token},
+        token_secret: {S: req.user.token_secret}
     }
 }, function(err, data) {
       logErrorAndData(err, data, "DynamoDB_Put_" + candidateType);

@@ -1,4 +1,5 @@
 var LinkedInStrategy = require('passport-linkedin').Strategy;
+var OAuth = require('oauth');
 
 exports.configurePassport = function(passport, dynamoDB) {
 
@@ -16,24 +17,47 @@ exports.configurePassport = function(passport, dynamoDB) {
         // represent the logged-in user.  In a typical application, you would want
         // to associate the LinkedIn account with a user record in your database,
         // and return that user instead.
-       
-        // See: http://passportjs.org/guide/configure/
-        return done(null, profile);
-    }
-    ));
+	console.log("Trying to update candidate's token/token_secret. This operation may fail.");
+	dynamoDB.updateItem({
+	    TableName: "Candidate",
+	        Key: {
+		linkedin_id: {S: profile.id}
+	    },
+	    AttributeUpdates: {
+		token: {
+		    Action: "PUT",
+		    Value: {S: token}
+		},
+		token_secret: {
+		    Action: "PUT",
+		    Value: {S: tokenSecret}
+		}
+	    }
+	}, function(err, data) {
+            if (err) {
+                console.log("Error while updating Dynamo after Linkedin Authentication. Potentially a new user? " + err);
+            }
+            
+            // Adding token/token_secret so that for new user (via signUp, we can put those attributes on the table)
+            profile.token = token;
+            profile.token_secret = tokenSecret;
+	    done(null, profile);
+	});
+    }));
 
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        done(null, user);
     });
 
-    passport.deserializeUser(function(id, done) {
+    passport.deserializeUser(function(user, done) {
         dynamoDB.getItem({
             TableName: 'Candidate',
-            Key: {
-                linkedin_id: {S: id}
-            }
-        }, function(err, data) {
-                done(null, data['Item']);
+                Key: {
+                    linkedin_id: {S: user.id}
+                }
+            }, function(err, data) {
+                var candidate = data['Item'];
+                done(null, candidate);
             }
         );
     });
