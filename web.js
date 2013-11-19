@@ -59,6 +59,9 @@ var dynamoDB = aws.dynamoDB();
 // Configure Passport
 authentication.configurePassport(passport, dynamoDB);
 
+// Get OAuth module
+var oauth = authentication.getOAuth();
+
 /**
 Meat of OAuth 1.0A
 https://github.com/jaredhanson/passport-oauth1/blob/master/lib/strategy.js#L118
@@ -206,8 +209,22 @@ app.get('/dashboard/:type', ensureAuthenticated, function(req, res) {
               }
           }
       }, function(err, data) {
-          res.render('intervieweeDashboard', {user: req.user,
-                                                   interviewers: data});
+          //TODO: Move into a separate function
+
+          data.Items.forEach(function(interviewer) {
+              if (interviewer.token && interviewer.token_secret) { 
+                  oauth.get(
+                      'http://api.linkedin.com/v1/people/~:(headline,skills,public-profile-url,picture-url)?format=json',
+                      interviewer.token.S,
+                      interviewer.token_secret.S,
+                      function (e, linkedinJsonData){
+                          interviewer.linkedinResult = JSON.parse(linkedinJsonData);
+                          // TODO: NASTY BUG. This only works for 1 user. WROONG. FIX ASAP.
+                          res.render('intervieweeDashboard', {user: req.user, interviewers: data});
+                      }
+                  );
+              }
+          });
       });
   }
 });

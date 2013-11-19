@@ -1,13 +1,15 @@
 var LinkedInStrategy = require('passport-linkedin').Strategy;
 var OAuth = require('oauth');
 
+var CONSUMER_KEY = "v8yfm0j3yo65";
+
 exports.configurePassport = function(passport, dynamoDB) {
 
     passport.use(new LinkedInStrategy({
         //requestTokenURL: "https://api.linkedin.com/uas/oauth/requestToken",
         //accessTokenURL: "https://api.linkedin.com/uas/oauth/accessToken",
         //userAuthorizationURL: "https://api.linkedin.com/uas/oauth/authorize",
-        consumerKey: "v8yfm0j3yo65",
+        consumerKey: CONSUMER_KEY,
         consumerSecret: process.env.LINKEDIN_SECRET,
         callbackURL: process.env.LINKEDIN_CALLBACK_URL + "auth/linkedin/callback",
         profileFields: ['id', 'first-name', 'last-name', 'email-address', 'headline']
@@ -61,4 +63,17 @@ exports.configurePassport = function(passport, dynamoDB) {
             }
         );
     });
+}
+
+exports.getOAuth = function() {
+    var oauth = new OAuth.OAuth(
+      'https://api.linkedin.com/uas/oauth/requestToken',
+      'https://api.linkedin.com/uas/oauth/accessToken',
+      CONSUMER_KEY,
+      process.env.LINKEDIN_SECRET,
+      '1.0A',
+      null,
+      'HMAC-SHA1'
+    );
+    return oauth;
 }

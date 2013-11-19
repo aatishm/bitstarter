@@ -56,12 +56,17 @@
                                         <h4>  
                                         <%= interviewer.displayName.S %>
                                         </h4>
+                                        <% if (interviewer.linkedinResult) {%>
+                                        <h5><%= interviewer.linkedinResult.headline %></h5>
+                                        <% } %>
+                                        <!--
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
                                                 <b>Price</b>
                                             </div>
                                             <div class="panel-body"><%= interviewer.price.S %>$/hr</div>
                                         </div>
+                                        -->
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
                                                 <b>Area of Expertise</b>
