@@ -1,0 +1,3 @@
+Use http git remotes to push to heroku: https://devcenter.heroku.com/articles/http-git
+How to deploy code to heroku (via git): https://devcenter.heroku.com/articles/git
+Change git to use vim instead of default nano editor: http://stackoverflow.com/questions/2596805/how-do-i-make-git-use-the-editor-of-my-choice-for-commits

@@ -19,23 +19,23 @@ exports.configurePassport = function(passport, dynamoDB) {
         // represent the logged-in user.  In a typical application, you would want
         // to associate the LinkedIn account with a user record in your database,
         // and return that user instead.
-	console.log("Trying to update candidate's token/token_secret. This operation may fail.");
-	dynamoDB.updateItem({
-	    TableName: "Candidate",
-	        Key: {
-		linkedin_id: {S: profile.id}
-	    },
-	    AttributeUpdates: {
-		token: {
-		    Action: "PUT",
-		    Value: {S: token}
-		},
-		token_secret: {
-		    Action: "PUT",
-		    Value: {S: tokenSecret}
-		}
-	    }
-	}, function(err, data) {
+    	console.log("Trying to update token/token_secret of candidate: " + profile.id + ". This operation may fail.");
+    	dynamoDB.updateItem({
+    	    TableName: "Candidate",
+    	        Key: {
+    		linkedin_id: {S: profile.id}
+    	    },
+    	    AttributeUpdates: {
+    		token: {
+    		    Action: "PUT",
+    		    Value: {S: token}
+    		},
+    		token_secret: {
+    		    Action: "PUT",
+    		    Value: {S: tokenSecret}
+    		}
+    	    }
+    	}, function(err, data) {
             if (err) {
                 console.log("Error while updating Dynamo after Linkedin Authentication. Potentially a new user? " + err);
             }
@@ -43,8 +43,8 @@ exports.configurePassport = function(passport, dynamoDB) {
             // Adding token/token_secret so that for new user (via signUp, we can put those attributes on the table)
             profile.token = token;
             profile.token_secret = tokenSecret;
-	    done(null, profile);
-	});
+    	    done(null, profile);
+    	});
     }));
 
     passport.serializeUser(function(user, done) {

@@ -189,9 +189,7 @@ function logErrorAndData(err, data, moduleName) {
     if (err) { console.log(moduleName + " Error: " + err); }
     if (data) { 
         console.log("Module Name: " + moduleName + "\n");
-        for (var key in data) {
-            console.log("Key: " + key + "Val: " + data[key]); 
-        }
+        console.log("Data: \n" + JSON.stringify(data))
     }
 }
 
