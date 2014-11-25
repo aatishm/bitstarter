@@ -48,24 +48,15 @@
                             </div>
                         -->
                         <label>Programming Languages</label>
-                        <script type="text/javascript">console.log(JSON.stringify(user))</script>
-                        <textarea name="languages" class="input-xlarge" id="textarea" rows="3" placeholder="Programming Languages you are awesome at!">
-                            <% if (user && user.languages) { %>
-                                <%= user.languages %>
-                            <% } %>
-                        </textarea>
+                        <% console.log("Interviewer: " + JSON.stringify(user)) %>
+                        <textarea name="languages" class="input-xlarge" id="textarea" rows="3" placeholder="Programming Languages you are awesome at!"><%
+                            if (user && user.languages) { %><%= user.languages.S.trim() %><% } %></textarea>
                         <label>Area of expertise</label>
-                        <textarea name="areaOfExpertise" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ...">
-                            <% if (user && user.areaOfExpertise) { %>
-                                <%= user.areaOfExpertise %>
-                            <% } %>
-                        </textarea>
+                        <textarea name="areaOfExpertise" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."><%
+                            if (user && user.areaOfExpertise) { %><%= user.areaOfExpertise.S.trim() %><% } %></textarea>
                         <label>Tell us more about yourself</label>
-                        <textarea name="description" class="input-xlarge" id="textarea" rows="3" placeholder="Why are you so awesome at taking interviews? Help interviewees to know more about you.">
-                            <% if (user && user.description) { %>
-                                <%= user.description %>
-                            <% } %>
-                        </textarea>
+                        <textarea name="description" class="input-xlarge" id="textarea" rows="3" placeholder="Why are you so awesome at taking interviews? Help interviewees to know more about you."><%
+                            if (user && user.description) { %><%= user.description.S.trim() %><% } %></textarea>
                         <br>
                         <button id="interviewerSettingsId" type="submit" class="btn btn-primary">Submit</button>
                         <span id="successLabel" class="label label-success" style="display:none">Your changes have been submitted!</span>
