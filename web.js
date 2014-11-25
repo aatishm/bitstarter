@@ -233,7 +233,7 @@ app.get('/interview/:interviewId', ensureAuthenticated, function(req, res) {
 });
 
 app.post('/interviewer', ensureAuthenticated, function(req, res) {
-    req.checkBody('price', 'Price has to be greater than 0$').notEmpty().isNumeric().min(0);
+    //req.checkBody('price', 'Price has to be greater than 0$').notEmpty().isNumeric().min(0);
     req.checkBody('languages', 'Languages cannot be blank').notEmpty();
     req.checkBody('areaOfExpertise', 'Area of Expertise cannot be blank').notEmpty();
     req.checkBody('description', 'Description cannot be blank').notEmpty();
@@ -252,10 +252,10 @@ app.post('/interviewer', ensureAuthenticated, function(req, res) {
               linkedin_id: {S: req.user.linkedin_id.S}
           },
           AttributeUpdates: {
-              price: {
-                  Action: "PUT",
-                  Value: {S: req.body.price}
-              },
+            //   price: {
+            //       Action: "PUT",
+            //       Value: {S: req.body.price}
+            //   },
               languages: {
                   Action: "PUT",
                   Value: {S: req.body.languages}

@@ -40,17 +40,31 @@
 		</div>
                 <div class="span9">
                     <form id="interviewerSettingsFormId" class="well">
-                        <label>Interview Session Practice Price</label>
-                        <div class="input-append">
-                            <input type="text" name="price" class="span3" maxlength="2">
-                            <span class="add-on">$/hr</span>
-                        </div>
+                        <!--
+                            <label>Interview Session Practice Price</label>
+                            <div class="input-append">
+                                <input type="text" name="price" class="span3" maxlength="2">
+                                <span class="add-on">$/hr</span>
+                            </div>
+                        -->
                         <label>Programming Languages</label>
-                        <textarea name="languages" class="input-xlarge" id="textarea" rows="3" placeholder="Programming Languages you are awesome at!"></textarea>
+                        <textarea name="languages" class="input-xlarge" id="textarea" rows="3" placeholder="Programming Languages you are awesome at!">
+                            <% if (user && user.languages) { %>
+                                <%= user.languages %>
+                            <% } %>
+                        </textarea>
                         <label>Area of expertise</label>
-                        <textarea name="areaOfExpertise" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ..."></textarea>
+                        <textarea name="areaOfExpertise" class="input-xlarge" id="textarea" rows="3" placeholder="Areas like Algorithms, Data Structures, Recursion, Graphs, Databases, ...">
+                            <% if (user && user.areaOfExpertise) { %>
+                                <%= user.areaOfExpertise %>
+                            <% } %>
+                        </textarea>
                         <label>Tell us more about yourself</label>
-                        <textarea name="description" class="input-xlarge" id="textarea" rows="3" placeholder="Why are you so awesome at taking interviews? Help interviewees to know more about you."></textarea>
+                        <textarea name="description" class="input-xlarge" id="textarea" rows="3" placeholder="Why are you so awesome at taking interviews? Help interviewees to know more about you.">
+                            <% if (user && user.description) { %>
+                                <%= user.description %>
+                            <% } %>
+                        </textarea>
                         <br>
                         <button id="interviewerSettingsId" type="submit" class="btn btn-primary">Submit</button>
                         <span id="successLabel" class="label label-success" style="display:none">Your changes have been submitted!</span>
