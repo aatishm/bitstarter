@@ -177,7 +177,7 @@ app.get('/auth/linkedin/callback',
              }
              else {
                  // Since user is already authenticated by linkedin but is not found in our dynamo, we want to logout the session.
-                 logout(req); 
+                 logout(req, res); 
                  res.render('error');
              }
          });
@@ -391,14 +391,17 @@ app.get('/dashboard/interviewee/pastInterviews', ensureAuthenticated, function(r
     });
 });
 
-function logout(req) {
+function logout(req, res) {
     req.user = false;
     req.logout();
-    req.session.destroy();
+    req.session.destroy(function(err) {
+        // If session destruction failed, still redirect
+        res.redirect('/')
+    });
 }
 
 app.get('/logout', function(req, res) {
-    logout(req);
+    logout(req, res);
     res.redirect('/');
 });
 
