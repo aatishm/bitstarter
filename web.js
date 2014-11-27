@@ -394,7 +394,6 @@ app.get('/dashboard/interviewee/pastInterviews', ensureAuthenticated, function(r
 
 function logout(req, res) {
     req.user = false;
-    req.logout();
     req.session.destroy(function(err) {
         // If session destruction failed, still redirect
         res.redirect('/')
