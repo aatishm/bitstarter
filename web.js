@@ -101,7 +101,8 @@ dynamoDB.putItem({
     }
 }, function(err, data) {
       logErrorAndData(err, data, "DynamoDB_Put_" + candidateType);
-      callback(data);
+      // TODO: We should show the flash message only if error has ConditionalCheckFailedException
+      err ? req.flash("User already exists") : callback(data)
    }
 );
 }
