@@ -402,7 +402,7 @@ function logout(req, res) {
 
 app.get('/logout', function(req, res) {
     logout(req, res);
-    res.redirect('/');
+    //res.redirect('/');
 });
 
 //  Simple route middleware to ensure user is authenticated.
