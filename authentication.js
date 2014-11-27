@@ -22,8 +22,13 @@ exports.configurePassport = function(passport, dynamoDB) {
     	console.log("Trying to update token/token_secret of candidate: " + profile.id + ". This operation may fail.");
     	dynamoDB.updateItem({
     	    TableName: "Candidate",
-    	        Key: {
-    		linkedin_id: {S: profile.id}
+    	    Expected: {
+                linkedin_id: {
+                    Exists: true
+                }
+            },
+    	    Key: {
+    		    linkedin_id: {S: profile.id}
     	    },
     	    AttributeUpdates: {
     		token: {
