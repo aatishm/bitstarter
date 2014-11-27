@@ -64,8 +64,7 @@ exports.configurePassport = function(passport, dynamoDB) {
                     linkedin_id: {S: user.id}
                 }
             }, function(err, data) {
-                var candidate = data['Item'];
-                done(null, candidate);
+                err ? done(err, null) : done(null, data['Item']);
             }
         );
     });
