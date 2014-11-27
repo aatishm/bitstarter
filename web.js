@@ -87,7 +87,7 @@ dynamoDB.putItem({
     TableName: "Candidate",
     Expected: {
         linkedin_id: {
-            Value: req.user.id,
+            Value: {S: req.user.id},
             Exists: false
         }
     },

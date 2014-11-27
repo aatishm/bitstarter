@@ -24,7 +24,7 @@ exports.configurePassport = function(passport, dynamoDB) {
     	    TableName: "Candidate",
     	    Expected: {
                 linkedin_id: {
-                    Value: profile.id,
+                    Value: {S: profile.id},
                     Exists: true
                 }
             },
