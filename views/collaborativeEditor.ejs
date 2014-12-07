@@ -109,6 +109,7 @@
 	      var text = $('#messageInput').val();
 	      chatRef.push({name:firepadUserList.displayName_, text:text});
 	      $('#messageInput').val('');
+	      e.preventDefault()
 	    }
 	  });
 
@@ -154,7 +155,7 @@
 		    <h3 class="panel-title">Chat</h3>
 		  </div>
 		  <div class="messages"></div>
-		  <input type="text" id='messageInput' class="form-control input" style="background-color:#f5f5f5" placeholder="Message...">
+		  <textarea id='messageInput' class="form-control textarea" style="background-color:#f5f5f5" placeholder="Message..."></textarea>
 		</div>
 	</div>
 	
