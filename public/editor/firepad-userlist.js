@@ -1,6 +1,6 @@
 var FirepadUserList = (function() {
-  function FirepadUserList(ref, place, userId) {
-    if (!(this instanceof FirepadUserList)) { return new FirepadUserList(ref, place, userId); }
+  function FirepadUserList(ref, place, userId, displayName) {
+    if (!(this instanceof FirepadUserList)) { return new FirepadUserList(ref, place, userId, displayName); }
 
     this.ref_ = ref;
     this.userId_ = userId;
@@ -8,7 +8,7 @@ var FirepadUserList = (function() {
     this.firebaseCallbacks_ = [];
 
     var self = this;
-    this.displayName_ = userId;
+    this.displayName_ = displayName;
     this.firebaseOn_(ref.root().child('.info/connected'), 'value', function(s) {
       if (s.val() === true && self.displayName_) {
         var nameRef = ref.child(self.userId_).child('name');

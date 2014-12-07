@@ -61,8 +61,12 @@
 	</style>
 
 	<script>
+	function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
 	$(document).ready(function() {
-	var firepadRef = new Firebase('https://intervyouer.firebaseio.com/');
+	    var firepadRef = new Firebase('https://intervyouer.firebaseio.com/');
         firepadRef = firepadRef.child('interviews').child('<%= interviewId %>');
         
   	    // $(#selector) breaks here since codemirror.js relies on appendChild api which is present only on DOM but not on jquery
@@ -71,18 +75,22 @@
 		// iterate through the dropdown menu of languages and bind 'click' event to set mode for the codeMirror (Editor)
 		$('.languages li').map(function(index, domElem) {
 			$(domElem).find('a').click(function() {
-				codeMirror.setOption('mode', $(this).attr('data-mode'));
-                                // Set the text of the button as the text of the selected anchor tag (programming language value)
-                                $(".btn:first-child").text($(this).text());
+			    codeMirror.setOption('mode', $(this).attr('data-mode'));
+                // Set the text of the button as the text of the selected anchor tag (programming language value)
+                $(".btn:first-child").text($(this).text());
 			});
 		});
 
-         var userId = '<%= userId %>';
-	// Create Firepad.
-    	var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {userId: userId});
+        var userId = '<%= userId %>';
+        var formattedcandidateType = capitalizeFirstLetter(candidateType)
+        var user = formattedcandidateType + ": " + userId
+        
+	    // Create Firepad.
+    	var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {userId: user});
 		
-    	// Create FirepadUserList (with our desired userId).
-    	var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'), document.getElementById('userlist'), userId);
+    	// Create FirepadUserList (with our desired displayName).
+    	var firepadUserList = FirepadUserList.fromDiv(
+    		firepadRef.child('users'), document.getElementById('userlist'), user, formattedcandidateType);
 		
        // Initialize contents.
 	   firepad.on('ready', function() {
@@ -133,7 +141,7 @@
 		    <li><a data-target="#" data-mode="htmlmixed">HTML</a></li>
 		    <li><a data-target="#" data-mode="css">CSS</a></li>
 		    <li><a data-target="#" data-mode="xml">XML</a></li>
-                    <li><a data-target="#" data-mode="text/plain">Plain Text</a></li>
+            <li><a data-target="#" data-mode="text/plain">Plain Text</a></li>
 		  </ul>
 		</div>
 		

@@ -229,8 +229,11 @@ app.get('/dashboard/:type', ensureAuthenticated, function(req, res) {
 });
 
 app.get('/interview/:interviewId', ensureAuthenticated, function(req, res) {
-    res.render('collaborativeEditor', {interviewId: req.params.interviewId,
-                                            userId: req.user.linkedin_id.S});
+    res.render('collaborativeEditor', {
+        interviewId: req.params.interviewId,
+        userId: req.user.linkedin_id.S,
+        candidateType: req.user.candidateType.S
+    });
 });
 
 app.post('/interviewer', ensureAuthenticated, function(req, res) {
