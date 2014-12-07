@@ -53,6 +53,19 @@ input.firepad-userlist-name-input {
   padding: 1px;
 }
 
+.firepad-userlist-name-text {
+  position: absolute;
+  left: 38px;
+  top: 0;
+  width: 105px;
+  height: 30px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-size: 14px;
+  padding: 1px;
+}
+
 .firepad-userlist-name-hint {
   position: absolute;
   left: 38px;

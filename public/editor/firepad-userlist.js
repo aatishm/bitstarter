@@ -65,25 +65,27 @@ var FirepadUserList = (function() {
       }
     });
 
-    var nameInput = elt('input', null, { type: 'text', 'class': 'firepad-userlist-name-input'} );
-    nameInput.value = this.displayName_;
+    var nameText = elt('div', this.displayName_, {'class': 'firepad-userlist-name-text'} );
+    // nameInput.value = this.displayName_;
 
-    var nameHint = elt('div', 'ENTER YOUR NAME', { 'class': 'firepad-userlist-name-hint'} );
-
-    var self = this;
-    // Update Firebase when name changes.
-    on(nameInput, 'change', function(e) {
-      var name = self.displayName_ = nameInput.value;
-      myUserRef.child('name').onDisconnect().remove();
-      myUserRef.child('name').set(name);
-      nameHint.style.display = 'none';
-      nameInput.blur();
+  // aatishm: For now, not giving the ability to change the name. Interviewer/Candidate should satisfy
+  
+  // var nameHint = elt('div', 'ENTER YOUR NAME', { 'class': 'firepad-userlist-name-hint'} );
+  
+  //   var self = this;
+  //   // Update Firebase when name changes.
+  //   on(nameInput, 'change', function(e) {
+  //     var name = self.displayName_ = nameInput.value;
+  //     myUserRef.child('name').onDisconnect().remove();
+  //     myUserRef.child('name').set(name);
+  //     nameHint.style.display = 'none';
+  //     nameInput.blur();
 	  
-	  // this will prevent default event to be triggered + event propagation to stop
-      return false;
-    });
+	 // // this will prevent default event to be triggered + event propagation to stop
+  //     return false;
+  //   });
 
-    var nameDiv = elt('div', [nameInput, nameHint]);
+    var nameDiv = elt('div', [nameText]);
 
     return elt('div', [ colorDiv, nameDiv ], { 'class': 'firepad-userlist-user' });
   };

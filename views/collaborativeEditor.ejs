@@ -82,15 +82,17 @@
 		});
 
         var userId = '<%= userId %>';
-        var formattedcandidateType = capitalizeFirstLetter(candidateType)
+        var formattedcandidateType = capitalizeFirstLetter('<%= candidateType %>')
         var user = formattedcandidateType + ": " + userId
+        
+        console.log("User: " + user)
         
 	    // Create Firepad.
     	var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror, {userId: user});
 		
     	// Create FirepadUserList (with our desired displayName).
     	var firepadUserList = FirepadUserList.fromDiv(
-    		firepadRef.child('users'), document.getElementById('userlist'), user, formattedcandidateType);
+        firepadRef.child('users'), document.getElementById('userlist'), user, formattedcandidateType);
 		
        // Initialize contents.
 	   firepad.on('ready', function() {
