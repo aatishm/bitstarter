@@ -10,6 +10,7 @@ var aws = require("./aws.js");
 var shortId = require('shortid');
 var expressValidator = require('express-validator');
 var uuid = require('node-uuid');
+var FirebaseTokenGenerator = require("firebase-token-generator");
 
 var app;
 // Created a self-signed certificate following this process: https://devcenter.heroku.com/articles/ssl-certificate-self
@@ -108,16 +109,16 @@ dynamoDB.putItem({
 }
 
 function getFromDynamo(params, callback) {
-dynamoDB.getItem({
-    TableName: params.tableName,
-    Key: {
-        linkedin_id: {S: params.id}
-    }
-}, function(err, data) {
-      logErrorAndData(err, data, "DynamoDB_Get");
-      callback(data);
-   }
-);
+    dynamoDB.getItem({
+        TableName: params.tableName,
+        Key: {
+            linkedin_id: {S: params.id}
+        }
+    }, function(err, data) {
+        logErrorAndData(err, data, "DynamoDB_Get");
+        callback(data);
+       }
+    );
 }
 
 function sendEmail(data, callback) {
@@ -165,6 +166,7 @@ app.get('/auth/linkedin/callback',
                   bodyData: "Welcome! We're happy you joined us. Your login id is same as your Linkedin id: " + req.user._json.emailAddress
               };
               sendEmail(emailData);
+              setFirebaseToken(req);
               // Redirect to dashboard
               candidateType === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
           });
@@ -173,6 +175,7 @@ app.get('/auth/linkedin/callback',
          // it is a login page. Retrieve item from dynamo db
          getFromDynamo({id: req.user.id, tableName: "Candidate"}, function(data) {
              if (data['Item'] != null) {
+                 setFirebaseToken(req);
                  // Redirect to dashboard
                  data['Item'].candidateType.S === "interviewer" ? res.redirect('/dashboard/interviewer') : res.redirect('/dashboard/interviewee') ;
              }
@@ -229,11 +232,32 @@ app.get('/dashboard/:type', ensureAuthenticated, function(req, res) {
 });
 
 app.get('/interview/:interviewId', ensureAuthenticated, function(req, res) {
-    res.render('collaborativeEditor', {
-        interviewId: req.params.interviewId,
-        userId: req.user.linkedin_id.S,
-        candidateType: req.user.candidateType.S
+    // req.user.candidateType.S === "interviewee"
+    var getItemKey = {
+        interviewId: {S: req.params.interviewId}
+    };
+    
+    console.log(JSON.stringify(getItemKey));
+    
+    dynamoDB.getItem({
+        TableName: "Interview",
+        Key: getItemKey
+    }, function(err, data) {
+        logErrorAndData(err, data, "DynamoDB_Get");
+        if (data && data["Item"][req.user.candidateType.S + "Id"]["S"] === req.user.linkedin_id.S) {
+            res.render('collaborativeEditor', {
+                user: req.user,
+                interviewId: req.params.interviewId,
+                userId: req.user.linkedin_id.S,
+                candidateType: req.user.candidateType.S,
+                firebaseToken: req.session.firebaseToken
+            });
+        }
+        else {
+            res.send({error: "User is not authorized to access this resource"}, 403);
+        }
     });
+    
 });
 
 app.post('/interviewer', ensureAuthenticated, function(req, res) {
@@ -440,6 +464,18 @@ function grantApiAccess(req, res, next) {
         return intervieweeUrls.some(_grantApi);
     }
     return false;
+}
+
+
+function setFirebaseToken(req) {
+    var token = generateFirebaseToken(req.user.id);
+    req.session.firebaseToken = token;
+}
+
+function generateFirebaseToken(linkedinId) {
+    var tokenGenerator = new FirebaseTokenGenerator(process.env.FIREBASE_SECRET);
+    var token = tokenGenerator.createToken({uid: linkedinId});
+    return token;
 }
 
 var port = process.env.PORT || 8080;
