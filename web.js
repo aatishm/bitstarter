@@ -212,21 +212,30 @@ app.get('/dashboard/:type', ensureAuthenticated, function(req, res) {
           }
       }, function(err, data) {
           //TODO: Move into a separate function
+          logErrorAndData(err, data, "DynamoDB_Scan_Interviewers");
+          if (data) {
+              res.render('intervieweeDashboard', {user: req.user, interviewers: data});
+          }
+          
+          if (err) {
+              res.send({error: "Something went wrong."})
+          }
+          
 
-          data.Items.forEach(function(interviewer) {
-              if (interviewer.token && interviewer.token_secret) { 
-                  oauth.get(
-                      'http://api.linkedin.com/v1/people/~:(headline,skills,public-profile-url,picture-url)?format=json',
-                      interviewer.token.S,
-                      interviewer.token_secret.S,
-                      function (e, linkedinJsonData){
-                          interviewer.linkedinResult = JSON.parse(linkedinJsonData);
-                          // TODO: NASTY BUG. This only works for 1 user. WROONG. FIX ASAP.
-                          res.render('intervieweeDashboard', {user: req.user, interviewers: data});
-                      }
-                  );
-              }
-          });
+        //   data.Items.forEach(function(interviewer) {
+        //       if (interviewer.token && interviewer.token_secret) { 
+        //           oauth.get(
+        //               'http://api.linkedin.com/v1/people/~:(headline,skills,public-profile-url,picture-url)?format=json',
+        //               interviewer.token.S,
+        //               interviewer.token_secret.S,
+        //               function (e, linkedinJsonData){
+        //                   interviewer.linkedinResult = JSON.parse(linkedinJsonData);
+        //                   // TODO: NASTY BUG. This only works for 1 user. WROONG. FIX ASAP.
+                          
+        //               }
+        //           );
+        //       }
+        //   });
       });
   }
 });

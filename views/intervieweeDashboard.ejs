@@ -46,39 +46,43 @@
                     <div id="interviewerList">
                         <ul class="thumbnails">
                         <% interviewers.Items.forEach(function(interviewer) {%>
-                            <% if (!interviewer.price) { return; } %>
                             <li class="span5 clearfix">
                                 <div class="thumbnail clearfix">
 <!--                                    <img src="http://placehold.it/320x200" alt="ALT NAME" class="pull-left span2 clearfix" style='margin-right:10px'> -->
                                     <div class="caption" class="pull-left">
                                         <a href="#" class="btn btn-primary icon pull-right" data-toggle="modal" onclick="triggerModal(&quot;<%=interviewer.linkedin_id.S %>&quot;, &quot;<%= user.linkedin_id.S%>&quot;)">
                                         Schedule an Interview</a>
-                                        <h4>  
-                                        <%= interviewer.displayName.S %>
-                                        </h4>
-                                        <% if (interviewer.linkedinResult) {%>
-                                        <h5><%= interviewer.linkedinResult.headline %></h5>
-                                        <% } %>
+                                        <!--<h4>  -->
+                                        <!--<%= interviewer.displayName.S %>-->
+                                        <!--</h4>-->
+                                        <!--<% if (interviewer.linkedinResult) {%>-->
+                                        <!--<h5><%= interviewer.linkedinResult.headline %></h5>-->
+                                        <!--<% } %>-->
+                                        <h4>Software Engineer @ Top Tech Company</h4>
                                         <!--
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
                                                 <b>Price</b>
                                             </div>
-                                            <div class="panel-body"><%= interviewer.price.S %>$/hr</div>
+                                           
                                         </div>
                                         -->
+                                        <% if (interviewer.areaOfExpertise && interviewer.areaOfExpertise.S) {%>
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
                                                 <b>Area of Expertise</b>
                                             </div>
                                             <div class="panel-body"><%= interviewer.areaOfExpertise.S %></div>
                                         </div>
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <b>Description</b>
-                                            </div>
-                                            <div class="panel-body"><%= interviewer.description.S %></div>
-                                        </div>
+                                        <% }%>
+                                        <!--<div class="panel panel-default">-->
+                                        <!--    <div class="panel-heading">-->
+                                        <!--        <b>Description</b>-->
+                                        <!--    </div>-->
+                                        <!--    <div class="panel-body">
+                                        <% //interviewer.description.S %>-->
+                                        <!--</div>-->
+                                        <!--</div>-->
                                     </div>
                                 </div>
                             </li>
